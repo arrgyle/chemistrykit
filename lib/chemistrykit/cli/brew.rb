@@ -1,14 +1,25 @@
 require 'chemistrykit/config'
 require 'chemistrykit/shared_context'
 require "#{Dir.getwd}/spec/helpers/spec_helper"
-require 'ci/reporter/rake/rspec_loader'
+require 'thor/rake_compat'
+require 'ci/reporter/rake/rspec'
 
 module ChemistryKit
   module CLI
     class Brew < Thor
+      include Thor::RakeCompat
 
       desc "brew", "Runs the scripts in Chemistrykit"
       argument :tag, :default => ['depth:shallow'], :type => :array
+
+      Spec::Rake::SpecTask.new(:spec) do |t|
+        t.spec_opts = ['--options', "./.rspec"]
+        t.filter_run tags[:filter] unless tags[:filter].nil?
+        t.filter_run_excluding tags[:exclusion_filter] unless tags[:exclusion_filter].nil?
+        t.include ChemistryKit::SharedContext
+        t.order = 'random'
+        # t.spec_files = FileList['spec/**/*_spec.rb']
+      end
 
       #  tags = {}
       #  options['tag'].each do |tag|
@@ -36,12 +47,6 @@ module ChemistryKit
       #ENV['CI_REPORTS'] = File.join(Dir.getwd, 'logs', log_timestamp)
       #ENV['CI_CAPTURE'] = CHEMISTRY_CONFIG['chemistrykit']['capture_output'] ? 'on' : 'off'
 
-      # RSpec.configure do |c|
-      #   c.filter_run tags[:filter] unless tags[:filter].nil?
-      #   c.filter_run_excluding tags[:exclusion_filter] unless tags[:exclusion_filter].nil?
-      #   c.include ChemistryKit::SharedContext
-      #   c.order = 'random'
-      # end
 
 
       # if RUBY_PLATFORM.downcase.include?("mswin")
