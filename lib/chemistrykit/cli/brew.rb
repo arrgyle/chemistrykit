@@ -12,7 +12,7 @@ module ChemistryKit
       desc "brew", "Runs the scripts in Chemistrykit"
       argument :tag, :default => ['depth:shallow'], :type => :array
 
-      Spec::Rake::SpecTask.new(:spec) do |t|
+      RSpec::Core::RakeTask.new(:spec) do |t|
         t.spec_opts = ['--options', "./.rspec"]
         t.filter_run tags[:filter] unless tags[:filter].nil?
         t.filter_run_excluding tags[:exclusion_filter] unless tags[:exclusion_filter].nil?
