@@ -3,6 +3,7 @@ require 'chemistrykit/shared_context'
 require "#{Dir.getwd}/spec/helpers/spec_helper"
 require 'thor/rake_compat'
 require 'ci/reporter/rake/rspec'
+require 'rspec/core/rake_task'
 
 module ChemistryKit
   module CLI
