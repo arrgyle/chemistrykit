@@ -10,8 +10,18 @@ module ChemistryKit
     class Brew < Thor
       include Thor::RakeCompat
 
-      desc "brew", "Runs the scripts in Chemistrykit"
-      argument :tag, :default => ['depth:shallow'], :type => :array
+      tags = {}
+      options['tag'].each do |tag|
+        filter_type = tag.start_with?('~') ? :exclusion_filter : :filter
+
+        name, value = tag.gsub(/^(~@|~|@)/, '').split(':')
+        name = name.to_sym
+
+        value = true if value.nil?
+
+        tags[filter_type] ||= {}
+        tags[filter_type][name] = value
+      end
 
       RSpec::Core::RakeTask.new(:spec) do |t|
         t.spec_opts = ['--options', "./.rspec"]
@@ -22,18 +32,6 @@ module ChemistryKit
         # t.spec_files = FileList['spec/**/*_spec.rb']
       end
 
-      #  tags = {}
-      #  options['tag'].each do |tag|
-      #    filter_type = tag.start_with?('~') ? :exclusion_filter : :filter
-
-      #    name, value = tag.gsub(/^(~@|~|@)/, '').split(':')
-      #    name = name.to_sym
-
-      #    value = true if value.nil?
-
-      #    tags[filter_type] ||= {}
-      #    tags[filter_type][name] = value
-      #  end
 
       #def log_timestamp
       #  Time.now.strftime("%Y-%m-%d-%H-%M-%S")

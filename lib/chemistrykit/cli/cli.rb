@@ -12,7 +12,7 @@ module ChemistryKit
 
       register(ChemistryKit::CLI::Generate, 'generate', 'generate [GENERATOR] [NAME]', 'generates something')
       register(ChemistryKit::CLI::New, 'new', 'new [NAME]', 'Creates a new ChemistryKit project')
-      register(ChemistryKit::CLI::Brew, 'brew', 'brew [TAG]', 'Runs Chemistrykit')
+      register(ChemistryKit::CLI::Brew, 'brew', 'brew [TAG]', 'Runs Chemistrykit', options = {:tag, :default => ['depth:shallow'], :type => :array} )
 
     end
   end
