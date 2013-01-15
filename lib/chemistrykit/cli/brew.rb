@@ -1,27 +1,31 @@
+require 'rspec' # TODO: Make sure this is correct when rspec configs are refactored
 require 'chemistrykit/config'
 require 'chemistrykit/shared_context'
 require "#{Dir.getwd}/spec/helpers/spec_helper"
-require 'thor/rake_compat'
-require 'ci/reporter/rake/rspec'
-require 'rspec/core/rake_task'
 
 module ChemistryKit
   module CLI
     class Brew < Thor
-      include Thor::RakeCompat
-
-      option :tag, :default => ['depth:shallow'], :type => :array
 
       # TODO: Pass tags from thor to filter_run_excluding
+      # TODO: Refactor Rspec configs our of cli
+      # TODO: Need to decide what the names of scripts will be and where they live
+      # TODO: Destory all of the comments!!
 
-      # TODO: We probably don't need to use rake here. Instead, perhaps call something like Rspec.configure
-      RSpec::Core::RakeTask.new(:spec) do |t|
+      # TODO: Rspec setup should be moved outside of the cmd line files
+      # Good intro to Rspec way here: http://blog.davidchelimsky.net/2010/06/14/filtering-examples-in-rspec-2/
+      RSpec.configure do |t|
         t.spec_opts = ['--options', "./.rspec"]
+        # If you pass me a tag, then run that one
         t.filter_run tags[:filter] unless tags[:filter].nil?
+        # If you exclude a tag, don't run it
         t.filter_run_excluding tags[:exclusion_filter] unless tags[:exclusion_filter].nil?
+        # This should set a default tag. See RSpec::Core::Configuration docs for usage
+        t.filter_run_including :depth => 'shallow'
+        # Use Project level configs
         t.include ChemistryKit::SharedContext
+        # Make it all random!
         t.order = 'random'
-        # TODO: Need to decide what the names of scripts will be and where they live
         t.spec_files = FileList['spec/**/*_spec.rb']
       end
 
