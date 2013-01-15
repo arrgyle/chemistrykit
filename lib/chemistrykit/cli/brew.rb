@@ -12,26 +12,17 @@ module ChemistryKit
 
       option :tag, :default => ['depth:shallow'], :type => :array
 
-      tags = {}
-      options['tag'].each do |tag|
-        filter_type = tag.start_with?('~') ? :exclusion_filter : :filter
+      # TODO: Pass tags from thor to filter_run_excluding
 
-        name, value = tag.gsub(/^(~@|~|@)/, '').split(':')
-        name = name.to_sym
-
-        value = true if value.nil?
-
-        tags[filter_type] ||= {}
-        tags[filter_type][name] = value
-      end
-
+      # TODO: We probably don't need to use rake here. Instead, perhaps call something like Rspec.configure
       RSpec::Core::RakeTask.new(:spec) do |t|
         t.spec_opts = ['--options', "./.rspec"]
         t.filter_run tags[:filter] unless tags[:filter].nil?
         t.filter_run_excluding tags[:exclusion_filter] unless tags[:exclusion_filter].nil?
         t.include ChemistryKit::SharedContext
         t.order = 'random'
-        # t.spec_files = FileList['spec/**/*_spec.rb']
+        # TODO: Need to decide what the names of scripts will be and where they live
+        t.spec_files = FileList['spec/**/*_spec.rb']
       end
 
 
