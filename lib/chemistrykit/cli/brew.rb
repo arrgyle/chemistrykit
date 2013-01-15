@@ -10,6 +10,8 @@ module ChemistryKit
     class Brew < Thor
       include Thor::RakeCompat
 
+      option :tag, :default => ['depth:shallow'], :type => :array
+
       tags = {}
       options['tag'].each do |tag|
         filter_type = tag.start_with?('~') ? :exclusion_filter : :filter
