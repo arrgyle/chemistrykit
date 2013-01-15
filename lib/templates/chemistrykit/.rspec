@@ -1,1 +1,2 @@
+--require GEM_PATH/lib/ci/reporter/rake/rspec_loader
 --format CI::Reporter::RSpec
