@@ -7,7 +7,7 @@ Gem::Specification.new do |s|
   s.summary        = "Automation framework for Selenium in Ruby"
   s.description    = File.read(File.join(File.dirname(__FILE__), 'README.md'))
 
-  s.files          = Dir["{bin,lib,spec}/**/*"] + %w(LICENSE README.md)
+  s.files          = Dir.glob("{bin,lib}/**/*", File::FNM_DOTMATCH) + %w(LICENSE README.md)
   s.executables    = [ 'ckit' ]
 
   s.required_ruby_version = '>=1.9'
@@ -17,8 +17,5 @@ Gem::Specification.new do |s|
   s.add_dependency "selenium-webdriver", "~> 2.27.2"
   s.add_dependency "ci_reporter", "~> 1.8.3"
 
-  # # A user on a Windows platform is notified that they need to install the following gems manually.
-  # platforms :mswin do
-  #   s.add_dependency "win32-file", "~> 0.6.8"
-  # end
+  s.extensions = 'ext/mkrf_conf.rb'
 end
