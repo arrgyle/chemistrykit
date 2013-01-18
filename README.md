@@ -1,27 +1,31 @@
 [![Gem Version](https://badge.fury.io/rb/chemistrykit.png)](http://badge.fury.io/rb/chemistrykit)
 
-chemistrykit
-============
+ChemistryKit - An Automation Framework for Selenium in Ruby.
+============================================================
 
 For a Python and PHP version, check out [py.saunter and saunter.php](https://github.com/Element-34/). ChemistryKit's inspiration comes from Saunter.
 
-Automation framework for Selenium in Ruby.
+## Installation
 
-Details coming soon...
+Add this line to your application's Gemfile:
 
-To contribute, use the [github-flow process](http://scottchacon.com/2011/08/31/github-flow.html)
+    gem 'chemistrykit'
 
-The short of it is:
+And then execute:
 
-  1. Create a branch
-  2. Commit changes to the branch
-  3. Create a pull request for that branch
+    $ bundle
 
-OR
+Or install it yourself as:
 
-  1. Fork
-  2. Commit
-  3. Pull request
+    $ gem install chemistrykit
+
+## Contributing
+
+1. Fork it
+2. Create your feature branch (`git checkout -b my-new-feature`)
+3. Commit your changes (`git commit -am 'Add some feature'`)
+4. Push to the branch (`git push origin my-new-feature`)
+5. Create new Pull Request
 
 Spec Discovery
 --------------
