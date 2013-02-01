@@ -41,7 +41,7 @@ module ChemistryKit
         log_timestamp = Time.now.strftime("%Y-%m-%d-%H-%M-%S")
         FileUtils.makedirs(File.join(Dir.getwd, 'evidence', log_timestamp))
 
-        ENV['CI_REPORTS'] = File.join(Dir.getwd, 'logs', log_timestamp)
+        ENV['CI_REPORTS'] = File.join(Dir.getwd, 'evidence', log_timestamp)
         ENV['CI_CAPTURE'] = CHEMISTRY_CONFIG['chemistrykit']['capture_output'] ? 'on' : 'off'
 
         RSpec.configure do |c|
@@ -58,15 +58,15 @@ module ChemistryKit
         if RUBY_PLATFORM.downcase.include?("mswin")
           require 'win32/dir'
 
-          if Dir.junction?(File.join(Dir.getwd, 'logs', 'latest'))
-            File.delete(File.join(Dir.getwd, 'logs', 'latest'))
+          if Dir.junction?(File.join(Dir.getwd, 'evidence', 'latest'))
+            File.delete(File.join(Dir.getwd, 'evidence', 'latest'))
           end
-          Dir.create_junction(File.join(Dir.getwd, 'logs', 'latest'), File.join(Dir.getwd, 'logs', log_timestamp))
+          Dir.create_junction(File.join(Dir.getwd, 'evidence', 'latest'), File.join(Dir.getwd, 'evidence', log_timestamp))
         else
-          if File.symlink?(File.join(Dir.getwd, 'logs', 'latest'))
-            File.delete(File.join(Dir.getwd, 'logs', 'latest'))
+          if File.symlink?(File.join(Dir.getwd, 'evidence', 'latest'))
+            File.delete(File.join(Dir.getwd, 'evidence', 'latest'))
           end
-          File.symlink(File.join(Dir.getwd, 'logs', log_timestamp), File.join(Dir.getwd, 'logs', 'latest'))
+          File.symlink(File.join(Dir.getwd, 'evidence', log_timestamp), File.join(Dir.getwd, 'evidence', 'latest'))
         end
         exit_code
       end
