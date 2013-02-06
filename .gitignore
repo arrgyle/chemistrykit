@@ -11,3 +11,6 @@ vendor/bundle
 
 # Temp Files
 *.swp
+
+# Testing files
+tmp/
