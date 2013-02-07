@@ -1,5 +1,6 @@
 [![Gem Version](https://badge.fury.io/rb/chemistrykit.png)](http://badge.fury.io/rb/chemistrykit)
 [![Dependency Status](https://gemnasium.com/arrgyle/chemistrykit.png)](https://gemnasium.com/arrgyle/chemistrykit)
+[![Code Climate](https://codeclimate.com/github/arrgyle/chemistrykit.png)](https://codeclimate.com/github/arrgyle/chemistrykit)
 
 ChemistryKit
 ============================================================
