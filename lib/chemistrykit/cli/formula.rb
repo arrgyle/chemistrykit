@@ -12,8 +12,8 @@ module ChemistryKit
       end
 
       def copy_file
-        template "page_object.tt", "./formulas/#{name}.rb"
-        template "beaker_with_page_object.tt", "./beakers/#{name}_beaker.rb"
+        template "formula.tt", "./formulas/#{name}.rb"
+        template "beaker_with_formula.tt", "./beakers/#{name}_beaker.rb"
       end
 
     end

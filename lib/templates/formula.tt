@@ -1,4 +1,4 @@
-module PageObjects
+module Formulas
   class <%= name.capitalize %>
 
     def initialize(driver)

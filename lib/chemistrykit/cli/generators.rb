@@ -1,5 +1,5 @@
 require 'thor'
-require 'chemistrykit/cli/page_object'
+require 'chemistrykit/cli/formula'
 require 'chemistrykit/cli/beaker'
 
 module ChemistryKit
