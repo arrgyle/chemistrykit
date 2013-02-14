@@ -13,19 +13,23 @@ This product is the result of years of experience and real world trial and error
 
 For a Python and PHP version, check out [py.saunter and saunter.php](https://github.com/Element-34/). ChemistryKit's inspiration comes from Saunter.
 
-## Installation
+## Making a new Project
 
-Add this line to your application's Gemfile:
-
-    gem 'chemistrykit'
-
-And then execute:
-
-    $ bundle
+    mkdir science
+    cd science
+    bundle init
+    echo 'gem "chemistrykit"' > Gemfile
+    bundle
+    ckit new
+    bundle install
 
 Or install it yourself as:
 
     $ gem install chemistrykit
+
+And run
+
+    $ ckit new your_project_name
 
 ## Contributing
 
