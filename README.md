@@ -21,7 +21,6 @@ For a Python and PHP version, check out [py.saunter and saunter.php](https://git
     echo 'gem "chemistrykit"' > Gemfile
     bundle
     ckit new
-    bundle install
 
 Or install it yourself as:
 
