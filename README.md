@@ -13,6 +13,10 @@ This product is the result of years of experience and real world trial and error
 
 For a Python and PHP version, check out [py.saunter and saunter.php](https://github.com/Element-34/). ChemistryKit's inspiration comes from Saunter.
 
+## Looking for help?
+
+If your have a question or find a bug, [please open an issue on Github](https://github.com/arrgyle/chemistrykit/issues).
+
 ## Installation
 
 Add this line to your application's Gemfile:
