@@ -68,13 +68,13 @@ end
 
 By default ChemistryKit will discover and run the _:depth => 'shallow'_ scripts. To run different ones you use the --tag option.
 
-    ckit --tag authentication
+    ckit brew --tag authentication
 
-    ckit --tag depth:shallow --tag authentication
+    ckit brew --tag depth:shallow --tag authentication
 
 To exlude a tag, put a ~ in front of it.
 
-    ckit --tag depth:shallow --tag ~authentication
+    ckit brew --tag depth:shallow --tag ~authentication
 
 A useful trick when developing a script is to use a custom tag.
 
