@@ -6,9 +6,9 @@ ChemistryKit
 
 ### A simple and opinionated web testing framework for Selenium WebDriver
 
-This framework was designed to help you get started with Selenium WebDriver quickly, to grow as needed, and to avoid common pitfalls by following convention over configuration.  
+This framework was designed to help you get started with Selenium WebDriver quickly, to grow as needed, and to avoid common pitfalls by following convention over configuration.
 
-ChemistryKit's inspiration comes from the Saunter Selenium framework which is available in Python and PHP. You can find more about it [here](http://element34.ca/products/saunter).  
+ChemistryKit's inspiration comes from the Saunter Selenium framework which is available in Python and PHP. You can find more about it [here](http://element34.ca/products/saunter).
 
 ## Getting Started
 
@@ -30,3 +30,11 @@ This will run ckit and execute your beakers. By default it will run the tests lo
 ## Contributing
 
 This project conforms to the [neverstopbuilding/craftsmanship](https://github.com/neverstopbuilding/craftsmanship) guidelines. Please see them for details.
+
+### Install Dependencies
+
+    bundle install
+
+### Run rake task to test code
+
+    rake build

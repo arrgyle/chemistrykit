@@ -2,5 +2,5 @@ require 'aruba/cucumber'
 
 Before do
   @aruba_timeout_seconds = 90
-  @dirs = ["tmp"]
+  @dirs = ["build/tmp"]
 end

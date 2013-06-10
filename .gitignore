@@ -3,7 +3,7 @@
 .bundle
 pkg/*
 tags
-tmp/
+build
 Gemfile.lock
 
 # Installed gems
