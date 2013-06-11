@@ -43,6 +43,9 @@ Feature: Brewing a ChemistryKit project
       """
     When I run `ckit brew`
     Then the stdout should contain "1 example, 0 failures"
+    And the following files should exist:
+      | evidence/SPEC-Bookie.xml  |
+      | evidence/server.log       |
 
     Examples:
     | hostname    |

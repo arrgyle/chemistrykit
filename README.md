@@ -38,3 +38,7 @@ This project conforms to the [neverstopbuilding/craftsmanship](https://github.co
 ### Run rake task to test code
 
     rake build
+
+### Run the local version of the executable:
+
+    bin/ckit

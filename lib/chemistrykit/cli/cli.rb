@@ -29,10 +29,10 @@ module ChemistryKit
         pass_params if options['params']
         load_page_objects
         set_logs_dir
+        load_page_objects
         turn_stdout_stderr_on_off
         setup_tags
         rspec_config
-        symlink_latest_report
         run_rspec
       end
 
@@ -48,12 +48,8 @@ module ChemistryKit
         Dir["#{Dir.getwd}/formulas/*.rb"].each {|file| require file }
       end
 
-      def log_timestamp
-        @log_timestamp = Time.now.strftime("%Y-%m-%d-%H-%M-%S")
-      end
-
       def set_logs_dir
-        ENV['CI_REPORTS'] = File.join(Dir.getwd, 'evidence', log_timestamp)
+        ENV['CI_REPORTS'] = File.join(Dir.getwd, 'evidence')
       end
 
       def turn_stdout_stderr_on_off
@@ -83,20 +79,6 @@ module ChemistryKit
           c.order = 'random'
           c.default_path = 'beakers'
           c.pattern = '**/*_beaker.rb'
-        end
-      end
-
-      def symlink_latest_report
-        case # Depending on platform, symlinks are done differently
-        when RUBY_PLATFORM.downcase.include?("mswin")
-          require 'win32/dir'
-          if Dir.junction?(File.join(Dir.getwd, 'evidence', 'latest'))
-            File.delete(File.join(Dir.getwd, 'evidence', 'latest'))
-          end
-          Dir.create_junction(File.join(Dir.getwd, 'evidence', 'latest'), File.join(Dir.getwd, 'evidence', @log_timestamp))
-        else
-          # This will work on any unix like platform
-          FileUtils.ln_sf(File.join(Dir.getwd, 'evidence', @log_timestamp), File.join(Dir.getwd, 'evidence', 'latest'))
         end
       end
 
