@@ -3,11 +3,11 @@
 require 'chemistrykit'
 
 ckit_result = ChemistryKit::CLI::CKitCLI.start
-
 # Had difficulties getting Thor to return a proper exit status on failure
 # Will need to revisit
 
-if ckit_result.is_a? Array
+#Checks for array on brewing or hash for commandless ckit call
+if ckit_result.is_a?(Array) || ckit_result.is_a?(Hash)
   exit 0
 else
   exit ckit_result
