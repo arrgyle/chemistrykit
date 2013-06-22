@@ -17,3 +17,5 @@ tmp/
 
 # Dave's junk
 .rvmrc
+
+.ruby-version
