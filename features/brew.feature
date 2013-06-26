@@ -12,11 +12,7 @@ Feature: Brewing a ChemistryKit project
     And a file named "formulas/bookie.rb" with:
       """
       module Formulas
-        class Bookie
-          def initialize(driver)
-            @driver = driver
-          end
-
+        class Bookie < Formula
           def open(url)
             @driver.get url
           end

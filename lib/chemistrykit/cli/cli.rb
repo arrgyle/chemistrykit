@@ -5,6 +5,8 @@ require 'chemistrykit/cli/new'
 require 'chemistrykit/cli/formula'
 require 'chemistrykit/cli/beaker'
 require 'chemistrykit/cli/helpers/formula_loader'
+require 'chemistrykit/formula/base'
+require 'chemistrykit/catalyst'
 
 module ChemistryKit
   module CLI

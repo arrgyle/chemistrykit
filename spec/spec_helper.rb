@@ -10,6 +10,8 @@ require 'bundler/setup'
 require 'fileutils'
 #not sure it this is the right way to include all the files under test.
 require_relative '../lib/chemistrykit/cli/helpers/formula_loader'
+require_relative '../lib/chemistrykit/formula/base'
+require_relative '../lib/chemistrykit/catalyst'
 
 TEST_TMP_PATH = File.join(Dir.pwd, 'build', 'tmp')
 
