@@ -35,7 +35,7 @@ Feature: Brewing a ChemistryKit project
       """
 
   Scenario Outline: Run All Configurations
-    When I overwrite _config.yaml with:
+    When I overwrite config.yaml with:
       """
       log: 'evidence'
       host: '<%= <hostname> %>'

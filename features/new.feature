@@ -13,5 +13,5 @@ Feature: ckit new
       | formulas |
       | evidence |
     And the following files should exist:
-      | _config.yaml  |
-      | .rspec        |
+      | config.yaml  |
+      | .rspec       |

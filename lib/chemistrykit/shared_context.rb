@@ -6,7 +6,7 @@ module ChemistryKit
     extend RSpec::Core::SharedContext
 
       SeleniumConnect.configure do |c|
-        c.config_file = File.join(Dir.getwd, '_config.yaml')
+        c.config_file = File.join(Dir.getwd, ENV['CONFIG_FILE'])
       end
 
       before(:each) do
