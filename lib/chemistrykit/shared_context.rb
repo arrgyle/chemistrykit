@@ -14,6 +14,10 @@ module ChemistryKit
       end
 
       after(:each) do
+        @driver.quit
+      end
+
+      after(:all) do
         SeleniumConnect.finish
       end
 
