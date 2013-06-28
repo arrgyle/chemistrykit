@@ -58,3 +58,24 @@ Feature: Brewing a ChemistryKit project
       """
     When I run `ckit brew`
     Then the stdout should contain "1 example, 0 failures"
+
+  Scenario: Brew a single beaker
+    Given a file named "config.yaml" with:
+      """
+      jar: '../../../vendor/selenium-server-standalone-2.33.0.jar'
+      log: 'evidence'
+      host: 'localhost'
+      """
+    And a file named "beaker/other_beaker.rb" with:
+      """
+      describe "Other", :depth => 'shallow' do
+        let(:book) { Formulas::Bookie.new(@driver) }
+
+        it "loads an external web page" do
+          book.open "http://www.google.com"
+        end
+      end
+      """
+    When I run `ckit brew --beaker=beaker/other_beaker.rb`
+    Then the stdout should contain "1 example, 0 failures"
+

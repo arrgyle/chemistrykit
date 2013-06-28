@@ -29,6 +29,9 @@ module ChemistryKit
       method_option :params, :type => :hash
       method_option :tag, :default => ['depth:shallow'], :type => :array
       method_option :config, :default => 'config.yaml', :aliases => "-c", :desc => "Supply alternative config file."
+      #TODO there should be a facility to simply pass a path to this command
+      method_option :beaker, :type => :string
+
       def brew
         load_config
         require 'chemistrykit/shared_context'
@@ -38,7 +41,12 @@ module ChemistryKit
         load_page_objects
         setup_tags
         rspec_config
-        run_rspec
+
+        if options['beaker']
+          run_rspec([options['beaker']])
+        else
+          run_rspec(Dir.glob(File.join(Dir.getwd)))
+        end
       end
 
       protected
@@ -95,8 +103,11 @@ module ChemistryKit
         end
       end
 
-      def run_rspec
-        RSpec::Core::Runner.run(Dir.glob(File.join(Dir.getwd)))
+      def run_rspec(beakers)
+
+        #puts single_beaker.inspect
+
+        RSpec::Core::Runner.run(beakers)
       end
 
     end
