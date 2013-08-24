@@ -18,5 +18,4 @@ gem 'guard-rubocop'
 gem "selenium-client", "~> 1.2.18"
 gem 'compass'
 gem 'zurb-foundation'
-
-
+gem 'redis'
