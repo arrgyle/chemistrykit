@@ -35,12 +35,13 @@ describe 'User Queue with Redis Example' do
     @redis.hmset('user:2', 'email', 'dave+0002@arrgyle.com', 'type', 'lite', 'password', 'secret', 'in_use', 'no')
 
     # Returns a user object
-    @redis.keys.each do |key|
-      if @redis.hget(key, 'type') == 'lite'
-        if @redis.hget(key, 'in_use') == 'no'
-          @redis.hset(key, 'in_use', 'yes')
-          @user[:id] = key
-          @user[:payload] = @redis.hgetall(key)
+    users = @redis.keys
+    users.each do |user|
+      if @redis.hget(user, 'type') == 'lite'
+        if @redis.hget(user, 'in_use') == 'no'
+          @redis.hset(user, 'in_use', 'yes')
+          @user[:id] = user
+          @user[:payload] = @redis.hgetall(user)
           break
         end
       end
