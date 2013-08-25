@@ -1,3 +1,5 @@
+# Encoding: utf-8
+
 require 'rspec'
 require 'redis'
 
@@ -8,7 +10,7 @@ describe 'User Queue with Redis Example' do
   ## and contains type and credentials
   ### (email, password, name) for each account
   #
-  #Assumed workflow:
+  # Assumed workflow:
   ## Search user queue by type to see if an account is available
   ### If so, remove it from the queueu and use it in the test
   #### Return when done
@@ -46,7 +48,7 @@ describe 'User Queue with Redis Example' do
   end
 
   after(:all) do
-    Process.kill "TERM", @pid
+    Process.kill 'TERM', @pid
     Process.wait @pid
   end
 
