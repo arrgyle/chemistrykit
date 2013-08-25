@@ -20,3 +20,6 @@ tmp/
 # Dave's junk
 .rvmrc
 .sass-cache
+
+# Redis
+*.rdb
