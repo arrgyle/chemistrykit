@@ -18,7 +18,6 @@ vendor/bundle
 tmp/
 
 # Dave's junk
-.rvmrc
 .sass-cache
 
 # Redis
