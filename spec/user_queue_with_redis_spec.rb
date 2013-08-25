@@ -49,6 +49,7 @@ describe 'User Queue with Redis Example' do
   end
 
   after(:all) do
+    @redis.flushdb
     Process.kill 'TERM', @pid
     Process.wait @pid
   end
