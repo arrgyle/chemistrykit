@@ -64,6 +64,7 @@ describe 'User Queue with Redis Example' do
     @redis.hset(@user[:id], 'type', 'pro')
     @redis.hset(@user[:id], 'in_use', 'no')
 
+    # Retrieves the updated user field
     @redis.hget(@user[:id], 'type').should eq 'pro'
     @redis.hget(@user[:id], 'in_use').should eq 'no'
   end
