@@ -15,9 +15,13 @@ describe 'User Queue with Redis Example' do
   ### If not, create a new user and add it to the queue
 
   before(:all) do
+    bin_path = File.expand_path(File.join(File.dirname(__FILE__), '../bin'))
+    @pid = fork do
+      exec "#{bin_path}/redis-server"
+    end
 
-    # YOU NEED TO START THE REDIS SERVER
-    ## e.g.`bin/redis-server &`
+    # Adding tiny delay so tests don't try to connect to quickly and fail
+    sleep 1
 
     @redis = Redis.new
     @user = Hash.new
@@ -39,6 +43,11 @@ describe 'User Queue with Redis Example' do
         end
       end
     end
+  end
+
+  after(:all) do
+    Process.kill "TERM", @pid
+    Process.wait @pid
   end
 
   it 'returns a correctly populated user object' do
