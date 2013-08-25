@@ -35,7 +35,7 @@ describe 'User Queue with Redis Example' do
     @redis.hmset('user:2', 'email', 'dave+0002@arrgyle.com', 'type', 'lite', 'password', 'secret', 'in_use', 'no')
 
     # Returns a user object
-    users = @redis.keys
+    users = @redis.keys('user:*')
     users.each do |user|
       if @redis.hget(user, 'type') == 'lite'
         if @redis.hget(user, 'in_use') == 'no'
@@ -49,7 +49,6 @@ describe 'User Queue with Redis Example' do
   end
 
   after(:all) do
-    @redis.flushdb
     Process.kill 'TERM', @pid
     Process.wait @pid
   end
