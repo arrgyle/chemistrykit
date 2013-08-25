@@ -5,7 +5,7 @@ require 'redis'
 
 describe 'User Queue with Redis Example' do
 
-  #GOAL:
+  # GOAL:
   ## A user queue that works across tests
   ## and contains type and credentials
   ### (email, password, name) for each account
