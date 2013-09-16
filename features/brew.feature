@@ -62,6 +62,26 @@ Feature: Brewing a ChemistryKit project
     When I run `ckit brew --beakers=beakers/other_beaker.rb`
     Then the stdout should contain "1 example, 0 failures"
 
+  Scenario: Brew beakers where the beakers directory contains a sub-directory
+    Given a file named "config.yaml" with:
+      """
+      selenium_connect:
+          log: 'evidence'
+          host: 'localhost'
+      """
+    And a file named "beakers/sub/other_beaker.rb" with:
+      """
+      describe "SubDirectory" do
+        let(:book) { Formulas::Bookie.new(@driver) }
+
+        it "loads an external web page" do
+          book.open "http://www.google.com"
+        end
+      end
+      """
+    When I run `ckit brew --all`
+    Then the stdout should contain "2 example, 0 failures"
+
   Scenario: Run all the tests regardless of tag
     Given a file named "config.yaml" with:
       """

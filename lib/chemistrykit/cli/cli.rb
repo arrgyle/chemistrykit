@@ -45,7 +45,7 @@ module ChemistryKit
 
       desc 'tags', 'Lists all tags in use in the test harness.'
       def tags
-        beakers = Dir.glob(File.join(Dir.getwd, 'beakers/*'))
+        beakers = Dir.glob(File.join(Dir.getwd, 'beakers/**/*')).select { |fn| !File.directory?(fn) }
         ::RSpec.configure do |c|
           c.add_setting :used_tags
           c.before(:suite) { ::RSpec.configuration.used_tags = [] }
@@ -88,7 +88,7 @@ module ChemistryKit
         load_page_objects
 
         # get those beakers that should be executed
-        beakers = options['beakers'] ? options['beakers'] : Dir.glob(File.join(Dir.getwd, 'beakers/*'))
+        beakers = options['beakers'] ? options['beakers'] : Dir.glob(File.join(Dir.getwd, 'beakers/**/*')).select { |fn| !File.directory?(fn) }
 
         if options['beakers']
           # if a beaker(s) defined use them
@@ -97,7 +97,7 @@ module ChemistryKit
           setup_tags(options['tag'])
         else
           # beakers default to everything
-          beakers = Dir.glob(File.join(Dir.getwd, 'beakers/*'))
+          beakers = Dir.glob(File.join(Dir.getwd, 'beakers/**/*')).select { |fn| !File.directory?(fn) }
 
           if options['tag']
 
