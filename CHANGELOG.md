@@ -1,3 +1,19 @@
+#3.10.0 (2013-09-17)
+Merged various pull requests including subfolders in beaker directory
+
+- Bumped version to 3.10.0 to prepare for release.
+- fixed small typo with tests
+- updated docs to detail catalyst usage
+- updated template not to include depracated log configuration to close #73
+- fixed typo with test, updated variable to be more verbose, changed all the ckit executions in the cucumber tests to use bundle exec
+- updated rvm rbenv managment to new mode
+- locked ruby version until clearing up how that can be managed
+- updated rubo and fixed some code quality issues
+- added contribution clarity to readme docs
+- add a test to run beakers from a sub-directory
+- bump selenium-webdriver to overcome a loading error for rubyzip
+- Beaker directory now supports sub-directories
+
 #3.9.1 (2013-08-26)
 small fix to gemfile
 
