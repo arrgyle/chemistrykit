@@ -55,7 +55,9 @@ module ChemistryKit
       end
 
       def example_passed(example)
-        @example_group_html += render_example('passing', example) {}
+        super(example)
+        @example_group_html += render_example('passing', example) do |doc|
+        end
       end
 
       def example_pending(example)
@@ -197,8 +199,7 @@ module ChemistryKit
 
       def render_example(status, example)
         build_fragment do |doc|
-          show = status == 'passing' ? 'hide' : ''
-          doc.div(class: "row example #{status} #{show}") do
+          doc.div(class: "row example #{status}") do
             doc.div(class: 'large-12 columns') do
               doc.div(class: 'row example-heading') do
                 doc.div(class: 'large-9 columns') do
