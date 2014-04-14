@@ -1,3 +1,7 @@
+#3.10.2 (2014-04-13)
+Pulled in latest version of selenium-connect to address connection issues in Firefox
+
+
 #3.10.0 (2013-09-17)
 Merged various pull requests including subfolders in beaker directory
 
