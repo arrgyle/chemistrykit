@@ -20,3 +20,6 @@ gem 'guard-rubocop'
 gem 'selenium-client', '~> 1.2.18'
 gem 'compass'
 gem 'zurb-foundation'
+
+# for simpler local development
+#gem 'selenium-connect', :path => '~/Dropbox/_dev/chemistrykit/selenium-connect', :branch => 'develop'
