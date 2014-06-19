@@ -197,7 +197,7 @@ module ChemistryKit
             Dir.mkdir test_path unless File.exists?(test_path)
 
             # set the tags and permissions if sauce
-            if sc_config[:host] == 'saucelabs'
+            if sc_config[:host] == 'saucelabs' || sc_config[:host] == 'appium'
               tags = example.metadata.reject do |key, value|
                 [:example_group, :example_group_block, :description_args, :caller, :execution_result, :full_description].include? key
               end

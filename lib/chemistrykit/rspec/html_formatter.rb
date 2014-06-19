@@ -103,6 +103,7 @@ module ChemistryKit
             doc.div(class: 'large-12 columns') do
               doc.div(class: 'section-container auto', 'data-section' => '') do
                 doc << render_failshot_if_found(example)
+                doc << render_video_if_found(example)
                 doc << render_stack_trace(example)
                 doc << render_log_if_found(example, 'server.log')
                 doc << render_log_if_found(example, 'chromedriver.log')
@@ -149,6 +150,22 @@ module ChemistryKit
           end
         end
       end
+
+      def render_video_if_found(example)
+        beaker_folder = slugify(@example_group.description)
+        example_folder = slugify(@example_group.description + '_' + example.description)
+
+        path = File.join(Dir.getwd, 'evidence', beaker_folder, example_folder, 'video.flv')
+        if File.exist?(path)
+          render_section('Failure Video') do |doc|
+             # if this is a jenkins job this variable is set and we can use it to get the right path to the images
+            if ENV['JOB_NAME']
+              path = File.join("/job/#{ENV['JOB_NAME']}/ws", 'evidence', beaker_folder, example_folder, 'video.flv')
+            end
+            doc.a(href: path) { doc.text path }
+          end
+        end
+      end      
 
       def render_log_if_found(example, log)
         beaker_folder = slugify(@example_group.description)
