@@ -57,7 +57,7 @@ describe ChemistryKit::Config::BasicAuth do
   end
 
   it 'should return the http url' do
-    @basic_auth.http_url.should eq "http://#{VALID_USERNAME}:#{VALID_PASSWORD}@testsite.com/"
+    @basic_auth.http_url.should eq "http://#{VALID_USERNAME}:#{VALID_PASSWORD}@testsite.com"
   end
 
   it 'should return the http url by default' do

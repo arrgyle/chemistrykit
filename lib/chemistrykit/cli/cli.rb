@@ -229,7 +229,7 @@ module ChemistryKit
           end
           c.before(:each) do
             if config.basic_auth
-              @driver.get(config.basic_auth.http_url)
+              @driver.get(config.basic_auth.http_url) if config.basic_auth.http?
               @driver.get(config.basic_auth.https_url) if config.basic_auth.https?
             end
 
