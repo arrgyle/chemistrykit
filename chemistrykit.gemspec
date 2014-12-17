@@ -24,7 +24,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'builder', '~> 3.2.2'
   s.add_dependency 'selenium-webdriver', '~> 2.41'
   s.add_dependency 'rest-client', '~> 1.7.1'
-  s.add_dependency 'parallel_tests', '~> 0.16.6'
+  s.add_dependency 'parallel_tests', '~> 1.0.6'
   s.add_dependency 'parallel', '~> 0.7.0'
   s.add_dependency 'rspec-retry', '~> 0.2.1'
   s.add_dependency 'nokogiri', '~> 1.6.0'
