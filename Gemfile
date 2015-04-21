@@ -2,8 +2,6 @@
 
 source 'https://rubygems.org'
 
-# Specify dependencies in chemistrykit.gemspec
-gemspec
 
 gem 'aruba', '~> 0.5.1'
 gem 'cucumber', '~> 1.2.1'
@@ -21,3 +19,7 @@ gem 'selenium-client', '~> 1.2.18'
 gem 'selenium-connect', git: 'https://github.com/animoto/selenium-connect.git', branch: 'develop'
 gem 'compass'
 gem 'zurb-foundation'
+gem 'logging', path: '/Users/jaysirju/Animoto/logging'
+
+# Specify dependencies in chemistrykit.gemspec
+gemspec

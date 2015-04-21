@@ -57,6 +57,7 @@ module ChemistryKit
       def example_passed(example)
         super(example)
         @example_group_html += render_example('passing', example) do |doc|
+        doc << render_log_if_found(example, 'test_steps.log')
         end
       end
 
@@ -105,10 +106,12 @@ module ChemistryKit
                 doc << render_failshot_if_found(example)
                 doc << render_video_if_found(example)
                 doc << render_stack_trace(example)
+                doc << render_log_if_found(example, 'test_steps.log')
                 doc << render_log_if_found(example, 'server.log')
                 doc << render_log_if_found(example, 'chromedriver.log')
                 doc << render_log_if_found(example, 'firefox.log')
                 doc << render_log_if_found(example, 'sauce_job.log')
+
                 doc << render_dom_html_if_found(example)
               end
             end
@@ -165,12 +168,13 @@ module ChemistryKit
             doc.a(href: path) { doc.text path }
           end
         end
-      end      
+      end    
 
       def render_log_if_found(example, log)
         beaker_folder = slugify(@example_group.description)
         example_folder = slugify(@example_group.description + '_' + example.description)
         log_path = File.join(Dir.getwd, 'evidence', beaker_folder, example_folder, log)
+        puts log_path
         if File.exist?(log_path)
           render_section(log.capitalize) do |doc|
             doc.pre do
