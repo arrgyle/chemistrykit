@@ -56,8 +56,20 @@ module ChemistryKit
 
       def example_passed(example)
         super(example)
+
+        beaker_folder = slugify(@example_group.description)
+        example_folder = slugify(@example_group.description + '_' + example.description)
+        log_path = File.join(Dir.getwd, 'evidence', beaker_folder, example_folder, 'test_steps.log')
+
         @example_group_html += render_example('passing', example) do |doc|
-        doc << render_log_if_found(example, 'test_steps.log')
+          doc.a(href: log_path) { doc.text log_path }
+          #doc.div(class: 'row extra-content', 'style' => 'display: none') do
+          #  doc.div(class: 'large-12 columns') do
+          #    doc.div(class: 'section-container auto', 'data-section' => '') do
+          #      doc << render_log_if_found(example, 'test_steps.log')
+          #    end
+          #  end
+          #end
         end
       end
 

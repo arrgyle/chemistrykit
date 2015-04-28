@@ -177,7 +177,6 @@ module ChemistryKit
       # rubocop:disable MethodLength
       def rspec_config(config) # Some of these bits work and others don't
         ::RSpec.configure do |c|
-          #include ::RSpec::LoggingHelper
           c.capture_log_messages
 
           c.treat_symbols_as_metadata_keys_with_true_values = true
@@ -251,7 +250,6 @@ module ChemistryKit
               @job.finish passed: true
             end
             @sc.finish
-            puts 'after from chemistrykit'
             log = File.open(File.join(@test_path, 'test_steps.log'), 'w')
 
             lines  = @log_output.readlines
