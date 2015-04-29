@@ -60,16 +60,12 @@ module ChemistryKit
         beaker_folder = slugify(@example_group.description)
         example_folder = slugify(@example_group.description + '_' + example.description)
         log_path = File.join(Dir.getwd, 'evidence', beaker_folder, example_folder, 'test_steps.log')
-
-        @example_group_html += render_example('passing', example) do |doc|
-          doc.a(href: log_path) { doc.text log_path }
-          #doc.div(class: 'row extra-content', 'style' => 'display: none') do
-          #  doc.div(class: 'large-12 columns') do
-          #    doc.div(class: 'section-container auto', 'data-section' => '') do
-          #      doc << render_log_if_found(example, 'test_steps.log')
-          #    end
-          #  end
-          #end
+        puts log_path
+        puts File.exist?(log_path)
+        if File.exist?(log_path)
+          @example_group_html += render_example('passing', example) do |doc|
+            doc.a(href: log_path) { doc.text 'Test Steps' }
+          end
         end
       end
 
@@ -186,7 +182,6 @@ module ChemistryKit
         beaker_folder = slugify(@example_group.description)
         example_folder = slugify(@example_group.description + '_' + example.description)
         log_path = File.join(Dir.getwd, 'evidence', beaker_folder, example_folder, log)
-        puts log_path
         if File.exist?(log_path)
           render_section(log.capitalize) do |doc|
             doc.pre do
