@@ -60,9 +60,7 @@ module ChemistryKit
         beaker_folder = slugify(@example_group.description)
         example_folder = slugify(@example_group.description + '_' + example.description)
         log_path = File.join(Dir.getwd, 'evidence', beaker_folder, example_folder, 'test_steps.log')
-        puts log_path
-        puts File.exist?(log_path)
-        if File.exist?(log_path)
+        if (File.exist?(log_path) && !File.zero?(log_path))
           @example_group_html += render_example('passing', example) do |doc|
             doc.a(href: log_path) { doc.text 'Test Steps' }
           end
