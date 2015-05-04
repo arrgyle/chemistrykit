@@ -19,7 +19,7 @@ gem 'selenium-client', '~> 1.2.18'
 gem 'selenium-connect', git: 'https://github.com/animoto/selenium-connect.git', branch: 'develop'
 gem 'compass'
 gem 'zurb-foundation'
-gem 'logging', path: '/Users/jaysirju/Animoto/logging'
+gem 'logging'
 
 # Specify dependencies in chemistrykit.gemspec
 gemspec
