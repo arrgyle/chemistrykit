@@ -23,6 +23,10 @@ require 'chemistrykit/rspec/html_formatter'
 require 'chemistrykit/reporting/html_report_assembler'
 require 'chemistrykit/split_testing/provider_factory'
 
+require 'rubygems'
+require 'logging'
+require 'rspec/logging_helper'
+
 module ChemistryKit
   module CLI
 
@@ -173,6 +177,8 @@ module ChemistryKit
       # rubocop:disable MethodLength
       def rspec_config(config) # Some of these bits work and others don't
         ::RSpec.configure do |c|
+          c.capture_log_messages
+
           c.treat_symbols_as_metadata_keys_with_true_values = true
           unless options[:all]
             c.filter_run @tags[:filter] unless @tags[:filter].nil?
@@ -193,8 +199,8 @@ module ChemistryKit
             beaker_path = File.join(Dir.getwd, sc_config[:log])
             Dir.mkdir beaker_path unless File.exists?(beaker_path)
             sc_config[:log] += "/#{test_name}"
-            test_path = File.join(Dir.getwd, sc_config[:log])
-            Dir.mkdir test_path unless File.exists?(test_path)
+            @test_path = File.join(Dir.getwd, sc_config[:log])
+            Dir.mkdir @test_path unless File.exists?(@test_path)
 
             # set the tags and permissions if sauce
             if sc_config[:host] == 'saucelabs' || sc_config[:host] == 'appium'
@@ -244,6 +250,13 @@ module ChemistryKit
               @job.finish passed: true
             end
             @sc.finish
+            log = File.open(File.join(@test_path, 'test_steps.log'), 'w')
+
+            lines  = @log_output.readlines
+            lines.each do |line|
+              log.write(line)
+            end
+            log.close
           end
           c.order = 'random'
           c.default_path = 'beakers'
