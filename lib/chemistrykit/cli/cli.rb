@@ -283,10 +283,11 @@ module ChemistryKit
 
       def run_in_parallel(beakers, concurrency, tags, options)
         unless options[:all]
-          tag_string = tags.empty? ? nil : '--tag=' + tags[:filter].map { |k, v| "#{k}:#{v}" }.join(' ')
+          tag_string = tags[:filter].nil? ? nil : '--tag ' + tags[:filter].map { |k, v| "#{k}:#{v}" }.join(' ')
+          exclude_tag_string = tags[:exclusion_filter].nil? ? nil : '--tag ~' + tags[:exclusion_filter].map { |k, v| "#{k}:#{v}" }.join(' ')
         end
         config_string = '--config=' + options['config']
-        args = %w(--type rspec) + ['-n', concurrency.to_s] + ['-o', "#{config_string} #{tag_string} --beakers="] + beakers
+        args = %w(--type rspec) + ['-n', concurrency.to_s] + ['-o', "#{config_string} #{tag_string} #{exclude_tag_string} --beakers="] + beakers
         ParallelTests::CLI.new.run(args)
       end
 
