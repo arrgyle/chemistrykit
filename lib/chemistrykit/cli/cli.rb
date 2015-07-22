@@ -300,7 +300,7 @@ module ChemistryKit
       end
 
       def rspec_parallel(beakers, concurrency, tags, options)
-	args = beakers + ['--parallel-test', 'concurrency.to_s']
+	args = beakers + ['--parallel-test', concurrency.to_s]
 	::RSpec::Parallel::Runner.run(args)
       end
 
