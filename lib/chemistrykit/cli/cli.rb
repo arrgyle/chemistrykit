@@ -3,6 +3,7 @@
 require 'thor'
 require 'rspec'
 require 'rspec/retry'
+require 'rspec/parallel'
 require 'chemistrykit/cli/new'
 require 'chemistrykit/cli/formula'
 require 'chemistrykit/cli/beaker'
@@ -118,7 +119,7 @@ module ChemistryKit
 
         # based on concurrency parameter run tests
         if config.concurrency > 1 && ! options['parallel']
-          exit_code = run_in_parallel beakers, config.concurrency, @tags, options
+          exit_code = rspec_parallel beakers, config.concurrency, @tags, options
         else
           exit_code = run_rspec beakers
         end
@@ -289,6 +290,11 @@ module ChemistryKit
         config_string = '--config=' + options['config']
         args = %w(--type rspec) + ['-n', concurrency.to_s] + ['-o', "#{config_string} #{tag_string} #{exclude_tag_string} --beakers="] + beakers
         ParallelTests::CLI.new.run(args)
+      end
+
+      def rspec_parallel(beakers, concurrency, tags, options)
+	args = beakers + ['--parallel-test', 'concurrency.to_s']
+	::RSpec::Parallel::Runner.run(args)
       end
 
       def run_rspec(beakers)
