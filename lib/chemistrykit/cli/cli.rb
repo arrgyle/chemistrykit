@@ -177,6 +177,7 @@ module ChemistryKit
 
       # rubocop:disable MethodLength
       def rspec_config(config) # Some of these bits work and others don't
+        puts 'RSPEC CONFIG'
         ::RSpec.configure do |c|
           c.capture_log_messages
 
@@ -274,8 +275,10 @@ module ChemistryKit
           c.default_retry_count = config.retries_on_failure
 
           # TODO: this is messy... there should be a cleaner way to hook various reporter things.
+          puts config.concurrency
           if config.concurrency == 1 || options['parallel']
             junit_log_name = options[:parallel] ? "junit_#{options[:parallel]}.xml" : 'junit_0.xml'
+            puts junit_log_name
             c.add_formatter(ChemistryKit::RSpec::JUnitFormatter, File.join(Dir.getwd, config.reporting.path, junit_log_name))
           end
         end
@@ -293,8 +296,8 @@ module ChemistryKit
       end
 
       def rspec_parallel(beakers, concurrency, tags, options)
-	args = beakers + ['--parallel-test', concurrency.to_s]
-	::RSpec::Parallel::Runner.run(args)
+	      args = beakers + ['--parallel-test', concurrency.to_s]
+	      ::RSpec::Parallel::Runner.run(args)
       end
 
       def run_rspec(beakers)
