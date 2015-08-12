@@ -13,8 +13,7 @@ module ChemistryKit
       include ERB::Util # for the #h method
       def initialize(output)
         super(output)
-        @example_group_number = 0
-        @example_number = 0
+        @testcases_data = {}
       end
 
       def message(message)
@@ -26,23 +25,22 @@ module ChemistryKit
       end
 
       def example_group_started(example_group)
-        @example_group = example_group
-        @example_group_html = ''
-        @example_group_number += 1
-        @example_group_status = 'passing'
+        @testcases_data[slugify(example_group.description)] = ['passing', '']
       end
 
       def example_group_finished(example_group)
         @output_html << build_fragment do |doc|
-          show = @example_group_status == 'passing' ? 'show' : ''
-          doc.div(class: "row example-group #{@example_group_status} #{show}") do
+          beaker = slugify(example_group.description)
+          status = @testcases_data[beaker][0]
+          show = status == 'passing' ? 'show' : ''
+          doc.div(class: "row example-group #{status} #{show}") do
             doc.div(class: 'large-12 columns') do
               doc.h3 do
                 doc.i(class: 'icon-beaker')
                 doc.text ' ' + example_group.description
               end
               doc.div(class: 'examples') do
-                doc << @example_group_html
+                doc << @testcases_data[beaker][1]
               end
             end
           end
@@ -51,25 +49,25 @@ module ChemistryKit
 
       def example_started(example)
         super(example)
-        @example_number += 1
       end
 
       def example_passed(example)
         super(example)
-
-        beaker_folder = slugify(@example_group.description)
-        example_folder = slugify(@example_group.description + '_' + example.description)
+        beaker_folder = root_group_name_for(example)
+        example_folder = slugify(beaker_folder + '_' + example.description)
         log_path = File.join(Dir.getwd, 'evidence', beaker_folder, example_folder, 'test_steps.log')
         if (File.exist?(log_path) && !File.zero?(log_path))
-          @example_group_html += render_example('passing', example) do |doc|
+          @testcases_data[beaker_folder][1] += render_example('passing', example) do |doc|
             doc.a(href: log_path) { doc.text 'Test Steps' }
           end
+        else
+          @testcases_data[beaker_folder][1] += render_example('passing', example) {}
         end
       end
 
       def example_pending(example)
         super(example)
-        @example_group_html += render_example('pending', example) do |doc|
+        @testcases_data[beaker_folder][1] += render_example('pending', example) do |doc|
           doc.div(class: 'row exception') do
             doc.div(class: 'large-12 columns') do
               doc.pre do
@@ -82,9 +80,10 @@ module ChemistryKit
 
       def example_failed(example)
         super(example)
+        beaker = root_group_name_for(example)
         exception = example.metadata[:execution_result][:exception]
-        @example_group_status = 'failing'
-        @example_group_html += render_example('failing', example) do |doc|
+        @testcases_data[beaker][0] = 'failing'
+        @testcases_data[beaker][1] += render_example('failing', example) do |doc|
           doc.div(class: 'row exception') do
             doc.div(class: 'large-12 columns') do
               doc.pre do
@@ -104,6 +103,16 @@ module ChemistryKit
 
       # TODO: put the right methods private, or better yet, pull this stuff out into its own
       # set of classes
+      def root_group_name_for(example)
+        group_hierarchy = []
+        current_example_group = example.metadata[:example_group]
+        until current_example_group.nil?
+          group_hierarchy.unshift current_example_group
+          current_example_group = current_example_group[:example_group]
+        end
+        slugify group_hierarchy.first[:description]
+      end
+
       def render_extra_content(example)
         build_fragment do |doc|
           doc.div(class: 'row extra-content') do
@@ -127,8 +136,8 @@ module ChemistryKit
 
       def render_dom_html_if_found(example)
         # TODO: pull out the common code for checking if the log file exists
-        beaker_folder = slugify(@example_group.description)
-        example_folder = slugify(@example_group.description + '_' + example.description)
+        beaker_folder = root_group_name_for(example)
+        example_folder = slugify(beaker_folder + '_' + example.description)
         paths = Dir.glob(File.join(Dir.getwd, 'evidence', beaker_folder, example_folder, 'dom_*.html'))
         number = 0
         sections = ''
@@ -145,8 +154,8 @@ module ChemistryKit
 
       # TODO: replace the section id with a uuid or something....
       def render_failshot_if_found(example)
-        beaker_folder = slugify(@example_group.description)
-        example_folder = slugify(@example_group.description + '_' + example.description)
+        beaker_folder = root_group_name_for(example)
+        example_folder = slugify(beaker_folder + '_' + example.description)
 
         path = File.join(Dir.getwd, 'evidence', beaker_folder, example_folder, 'failshot.png')
         if File.exist?(path)
@@ -161,8 +170,8 @@ module ChemistryKit
       end
 
       def render_video_if_found(example)
-        beaker_folder = slugify(@example_group.description)
-        example_folder = slugify(@example_group.description + '_' + example.description)
+        beaker_folder = root_group_name_for(example)
+        example_folder = slugify(beaker_folder + '_' + example.description)
 
         path = File.join(Dir.getwd, 'evidence', beaker_folder, example_folder, 'video.flv')
         if File.exist?(path)
@@ -177,8 +186,8 @@ module ChemistryKit
       end    
 
       def render_log_if_found(example, log)
-        beaker_folder = slugify(@example_group.description)
-        example_folder = slugify(@example_group.description + '_' + example.description)
+        beaker_folder = root_group_name_for(example)
+        example_folder = slugify(beaker_folder + '_' + example.description)
         log_path = File.join(Dir.getwd, 'evidence', beaker_folder, example_folder, log)
         if File.exist?(log_path)
           render_section(log.capitalize) do |doc|
