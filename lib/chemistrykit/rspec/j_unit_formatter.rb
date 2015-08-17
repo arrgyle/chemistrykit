@@ -19,10 +19,12 @@ module ChemistryKit
       end
 
       def example_passed(example)
+        puts 'PASSED ' + example.description
         add_to_test_suite_results example
       end
 
       def example_failed(example)
+        puts 'FAILED'
         add_to_test_suite_results example
       end
 
@@ -33,6 +35,10 @@ module ChemistryKit
       def dump_summary(duration, example_count, failure_count, pending_count)
         build_results duration, example_count, failure_count, pending_count
         output.puts @builder.target!
+      end
+
+      def example_group_finished(example_group)
+        puts "FINISHED BEAKER " + example_group.description
       end
 
       protected
@@ -82,7 +88,6 @@ module ChemistryKit
       def build_test_suite(suite_name, tests)
         failure_count = JUnitFormatter.count_in_suite_of_type tests, 'failed'
         skipped_count = JUnitFormatter.count_in_suite_of_type tests, 'pending'
-
         @builder.testsuite name: suite_name, tests: tests.size, errors: 0, failures: failure_count, skipped: skipped_count do
           @builder.properties
           build_all_tests tests

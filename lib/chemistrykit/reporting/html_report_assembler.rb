@@ -18,7 +18,7 @@ module ChemistryKit
       end
 
       def assemble
-        result_files = Dir.glob(File.join(@results_path, 'results_*.html'))
+        result_files = Dir.glob(File.join(@results_path, 'results.html'))
 
         result_files.each do |file|
           doc = Nokogiri.HTML(open(file))
