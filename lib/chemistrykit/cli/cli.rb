@@ -95,34 +95,14 @@ module ChemistryKit
         # get those beakers that should be executed
         beakers = options['beakers'] ? options['beakers'] : Dir.glob(File.join(Dir.getwd, 'beakers/**/*')).select { |file| !File.directory?(file) }
 
-        if options['beakers']
-          # if a beaker(s) defined use them
-          beakers = options['beakers']
-          # if tags are explicity defined, apply them to the selected beakers
-          setup_tags(options['tag'])
-        else
-          # beakers default to everything
-          beakers = Dir.glob(File.join(Dir.getwd, 'beakers/**/*')).select { |file| !File.directory?(file) }
-
-          if options['tag']
-
-            # if tags are explicity defined, apply them to all beakers
-            setup_tags(options['tag'])
-          else
-            # else choose the default tag
-            setup_tags(['depth:shallow'])
-          end
-        end
+        # if tags are explicity defined, apply them to all beakers
+        setup_tags(options['tag'])
 
         # configure rspec
         rspec_config(config)
 
         # based on concurrency parameter run tests
-        if config.concurrency > 1 && ! options['parallel']
-          exit_code = rspec_parallel beakers, config.concurrency, @tags, options
-        else
-          exit_code = run_rspec beakers
-        end
+        exit_code = rspec_parallel beakers, config.concurrency
 
         process_html unless options['parallel']
         exit_code unless options['parallel']
@@ -232,7 +212,7 @@ module ChemistryKit
             repo = ChemistryKit::Chemist::Repository::CsvChemistRepository.new chemist_data_paths
             # make the formula lab available
             @formula_lab = ChemistryKit::Formula::FormulaLab.new @driver, repo, File.join(Dir.getwd, 'formulas')
-
+            puts "EXAMPLE " + test_name
             example.run
           end
           c.before(:each) do
@@ -275,27 +255,13 @@ module ChemistryKit
           c.default_retry_count = config.retries_on_failure
 
           # TODO: this is messy... there should be a cleaner way to hook various reporter things.
-          puts config.concurrency
-          if config.concurrency == 1 || options['parallel']
-            junit_log_name = options[:parallel] ? "junit_#{options[:parallel]}.xml" : 'junit_0.xml'
-            puts junit_log_name
-            c.add_formatter(ChemistryKit::RSpec::JUnitFormatter, File.join(Dir.getwd, config.reporting.path, junit_log_name))
-          end
+          junit_log_name = options[:parallel] ? "junit_#{options[:parallel]}.xml" : 'junit_0.xml'
+          c.add_formatter(ChemistryKit::RSpec::JUnitFormatter, File.join(Dir.getwd, config.reporting.path, junit_log_name))
         end
       end
       # rubocop:enable MethodLength
 
-      def run_in_parallel(beakers, concurrency, tags, options)
-        unless options[:all]
-          tag_string = tags[:filter].nil? ? nil : '--tag ' + tags[:filter].map { |k, v| "#{k}:#{v}" }.join(' ')
-          exclude_tag_string = tags[:exclusion_filter].nil? ? nil : '--tag ~' + tags[:exclusion_filter].map { |k, v| "#{k}:#{v}" }.join(' ')
-        end
-        config_string = '--config=' + options['config']
-        args = %w(--type rspec) + ['-n', concurrency.to_s] + ['-o', "#{config_string} #{tag_string} #{exclude_tag_string} --beakers="] + beakers
-        ParallelTests::CLI.new.run(args)
-      end
-
-      def rspec_parallel(beakers, concurrency, tags, options)
+      def rspec_parallel(beakers, concurrency)
 	      args = beakers + ['--parallel-test', concurrency.to_s]
 	      ::RSpec::Parallel::Runner.run(args)
       end
