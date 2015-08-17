@@ -27,6 +27,8 @@ require 'rubygems'
 require 'logging'
 require 'rspec/logging_helper'
 
+require 'fileutils'
+
 module ChemistryKit
   module CLI
 
@@ -200,7 +202,8 @@ module ChemistryKit
             Dir.mkdir beaker_path unless File.exists?(beaker_path)
             sc_config[:log] += "/#{test_name}"
             @test_path = File.join(Dir.getwd, sc_config[:log])
-            Dir.mkdir @test_path unless File.exists?(@test_path)
+            FileUtils.rm_rf(@test_path) if File.exists?(@test_path)
+            Dir.mkdir @test_path
 
             # set the tags and permissions if sauce
             if sc_config[:host] == 'saucelabs' || sc_config[:host] == 'appium'
