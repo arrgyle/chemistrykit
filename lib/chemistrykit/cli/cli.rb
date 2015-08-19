@@ -14,15 +14,12 @@ require 'chemistrykit/formula/formula_lab'
 require 'chemistrykit/chemist/repository/csv_chemist_repository'
 require 'selenium_connect'
 require 'chemistrykit/configuration'
-require 'parallel_tests'
-require 'chemistrykit/parallel_tests/rspec/runner'
 require 'chemistrykit/rspec/j_unit_formatter'
 
-require 'rspec/core/formatters/html_formatter'
+#require 'rspec/core/formatters/html_formatter'
 require 'chemistrykit/rspec/html_formatter'
 
 require 'chemistrykit/reporting/html_report_assembler'
-require 'chemistrykit/split_testing/provider_factory'
 
 require 'allure-rspec'
 
@@ -34,13 +31,6 @@ require 'fileutils'
 
 module ChemistryKit
   module CLI
-
-    # Registers the formula and beaker commands
-    class Generate < Thor
-      register(ChemistryKit::CLI::FormulaGenerator, 'formula', 'formula [NAME]', 'generates a page object')
-      register(ChemistryKit::CLI::BeakerGenerator, 'beaker', 'beaker [NAME]', 'generates a beaker')
-    end
-
     # Main Chemistry Kit CLI Class
     class CKitCLI < Thor
 
@@ -49,41 +39,13 @@ module ChemistryKit
       check_unknown_options!
       default_task :help
 
-      desc 'generate SUBCOMMAND', 'generate <formula> or <beaker> [NAME]'
-      subcommand 'generate', Generate
-
-      desc 'tags', 'Lists all tags in use in the test harness.'
-      def tags
-        beakers = Dir.glob(File.join(Dir.getwd, 'beakers/**/*')).select { |file| !File.directory?(file) }
-        ::RSpec.configure do |c|
-          c.add_setting :used_tags
-          c.before(:suite) { ::RSpec.configuration.used_tags = [] }
-          c.around(:each) do |example|
-            standard_keys = [:example_group, :example_group_block, :description_args, :caller, :execution_result, :full_description]
-            example.metadata.each do |key, value|
-              tag = "#{key}:#{value}" unless standard_keys.include?(key)
-              ::RSpec.configuration.used_tags.push tag unless ::RSpec.configuration.used_tags.include?(tag) || tag.nil?
-            end
-          end
-          c.after(:suite) do
-            puts "\nTags used in harness:\n\n"
-            puts ::RSpec.configuration.used_tags.sort
-          end
-        end
-        ::RSpec::Core::Runner.run(beakers)
-      end
-
       desc 'brew', 'Run ChemistryKit'
       method_option :params, type: :hash
       method_option :tag, type: :array
       method_option :config, default: 'config.yaml', aliases: '-c', desc: 'Supply alternative config file.'
-      # TODO: there should be a facility to simply pass a path to this command
       method_option :beakers, aliases: '-b', type: :array
-      # This is set if the thread is being run in parallel so as not to trigger recursive concurency
-      method_option :parallel, default: false
-      method_option :results_file, aliases: '-r', default: false, desc: 'Specifiy the name of your results file.'
-      method_option :all, default: false, aliases: '-a', desc: 'Run every beaker.', type: :boolean
       method_option :retry, default: false, aliases: '-x', desc: 'How many times should a failing test be retried.'
+      method_option :all, default: false, aliases: '-a', desc: 'Run every beaker.', type: :boolean
 
       def brew
         config = load_config options['config']
@@ -91,8 +53,8 @@ module ChemistryKit
         # config object injected into the system?
         pass_params if options['params']
 
-        # replace certain config values with run time flags as needed
-        config = override_configs options, config
+        # TODO: expand this to allow for more overrides as needed
+        config.retries_on_failure = options['retry'].to_i if options['retry']
 
         load_page_objects
 
@@ -106,26 +68,23 @@ module ChemistryKit
         rspec_config(config)
 
         # based on concurrency parameter run tests
-        exit_code = rspec_parallel beakers, config.concurrency
+        if config.concurrency > 1
+          exit_code = rspec_parallel beakers, config.concurrency
+        else
+          exit_code = run_rspec beakers
+        end
 
-        process_html unless options['parallel']
-        exit_code unless options['parallel']
+        process_html
+        exit_code
       end
-
+      
       protected
 
       def process_html
-        File.join(Dir.getwd, 'evidence')
         results_folder = File.join(Dir.getwd, 'evidence')
         output_file = File.join(Dir.getwd, 'evidence', 'final_results.html')
         assembler = ChemistryKit::Reporting::HtmlReportAssembler.new(results_folder, output_file)
         assembler.assemble
-      end
-
-      def override_configs(options, config)
-        # TODO: expand this to allow for more overrides as needed
-        config.retries_on_failure = options['retry'].to_i if options['retry']
-        config
       end
 
       def pass_params
@@ -175,9 +134,10 @@ module ChemistryKit
             c.filter_run_excluding @tags[:exclusion_filter] unless @tags[:exclusion_filter].nil?
           end
           c.before(:all) do
-            @config = config # set the config available globaly
-            ENV['BASE_URL'] = config.base_url # assign base url to env variable for formulas
+            @config = config
+            ENV['BASE_URL'] = @config.base_url # assign base url to env variable for formulas
           end
+          
           c.around(:each) do |example|
             # create the beaker name from the example data
             beaker_name = example.metadata[:example_group][:description_args].first.downcase.strip.gsub(' ', '_').gsub(/[^\w-]/, '')
@@ -185,6 +145,7 @@ module ChemistryKit
 
             # override log path with be beaker sub path
             sc_config = @config.selenium_connect.dup
+            puts sc_config
             sc_config[:log] += "/#{beaker_name}"
             beaker_path = File.join(Dir.getwd, sc_config[:log])
             Dir.mkdir beaker_path unless File.exists?(beaker_path)
@@ -225,16 +186,15 @@ module ChemistryKit
             example.run
           end
           c.before(:each) do
-            if config.basic_auth
-              @driver.get(config.basic_auth.http_url) if config.basic_auth.http?
-              @driver.get(config.basic_auth.https_url) if config.basic_auth.https?
-            end
-
-            if config.split_testing
-              ChemistryKit::SplitTesting::ProviderFactory.build(config.split_testing).split(@driver)
+            if @config.basic_auth
+              @driver.get(@config.basic_auth.http_url) if @config.basic_auth.http?
+              @driver.get(@config.basic_auth.https_url) if @config.basic_auth.https?
             end
           end
-          c.after(:each) do |x|
+          
+          c.after(:each) do
+            test_name = example.description.downcase.strip.gsub(' ', '_').gsub(/[^\w-]/, '')
+            puts "KILLING " + test_name
             if example.exception.nil? == false
               @job.finish failed: true, failshot: @config.screenshot_on_fail
               Dir[@job.get_evidence_folder+"/*"].each do |filename|
@@ -246,30 +206,35 @@ module ChemistryKit
             end
             @sc.finish
           end
+
+          unless options[:all]
+            c.filter_run @tags[:filter] unless @tags[:filter].nil?
+            c.filter_run_excluding @tags[:exclusion_filter] unless @tags[:exclusion_filter].nil?
+          end
+          c.capture_log_messages
+          c.treat_symbols_as_metadata_keys_with_true_values = true
           c.order = 'random'
           c.default_path = 'beakers'
           c.pattern = '**/*_beaker.rb'
           c.output_stream = $stdout
-          c.add_formatter 'progress'
-
-          html_log_name = options[:parallel] ? "results_#{options[:parallel]}.html" : 'results_0.html'
-
-          c.add_formatter(ChemistryKit::RSpec::HtmlFormatter, File.join(Dir.getwd, config.reporting.path, html_log_name))
 
           # for rspec-retry
           c.verbose_retry = true # for rspec-retry
           c.default_retry_count = config.retries_on_failure
 
-          # TODO: this is messy... there should be a cleaner way to hook various reporter things.
-          junit_log_name = options[:parallel] ? "junit_#{options[:parallel]}.xml" : 'junit_0.xml'
+          html_log_name = "results.html"
+          c.add_formatter(ChemistryKit::RSpec::HtmlFormatter, File.join(Dir.getwd, config.reporting.path, html_log_name))
+          
+          junit_log_name = "junit.xml"
           c.add_formatter(ChemistryKit::RSpec::JUnitFormatter, File.join(Dir.getwd, config.reporting.path, junit_log_name))
+          c.add_formatter 'progress'
         end
       end
       # rubocop:enable MethodLength
 
       def rspec_parallel(beakers, concurrency)
-	      args = beakers + ['--parallel-test', concurrency.to_s]
-	      ::RSpec::Parallel::Runner.run(args)
+        args = beakers + ['--parallel-test', concurrency.to_s]
+        ::RSpec::Parallel::Runner.run(args)
       end
 
       def run_rspec(beakers)
