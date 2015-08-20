@@ -33,8 +33,10 @@ module ChemistryKit
       end
 
       def dump_summary(duration, example_count, failure_count, pending_count)
-        build_results duration, example_count, failure_count, pending_count
-        output.puts @builder.target!
+        unless example_count == 0
+          build_results duration, example_count, failure_count, pending_count
+          output.puts @builder.target!
+        end
       end
 
       def example_group_finished(example_group)

@@ -259,16 +259,18 @@ module ChemistryKit
       end
 
       def dump_summary(duration, example_count, failure_count, pending_count)
-        output = build_fragment do |doc|
-          doc.div(
-            class: 'results',
-            'data-count' => example_count.to_s,
-            'data-duration' => duration.to_s,
-            'data-failures' => failure_count.to_s,
-            'data-pendings' => pending_count.to_s
-            ) { doc << @output_html }
+        unless example_count == 0
+          output = build_fragment do |doc|
+            doc.div(
+              class: 'results',
+              'data-count' => example_count.to_s,
+              'data-duration' => duration.to_s,
+              'data-failures' => failure_count.to_s,
+              'data-pendings' => pending_count.to_s
+              ) { doc << @output_html }
+          end
+          @output.puts output
         end
-        @output.puts output
       end
 
       # def extra_failure_content(exception)
