@@ -16,7 +16,8 @@ require 'selenium_connect'
 require 'chemistrykit/configuration'
 require 'chemistrykit/rspec/j_unit_formatter'
 
-#require 'rspec/core/formatters/html_formatter'
+require 'parallel_split_test/runner'
+require 'rspec/core/formatters/html_formatter'
 require 'chemistrykit/rspec/html_formatter'
 
 require 'chemistrykit/reporting/html_report_assembler'
@@ -73,8 +74,8 @@ module ChemistryKit
         else
           exit_code = run_rspec beakers
         end
-
-        process_html
+  
+        #process_html
         exit_code
       end
       
@@ -211,6 +212,14 @@ module ChemistryKit
             c.filter_run @tags[:filter] unless @tags[:filter].nil?
             c.filter_run_excluding @tags[:exclusion_filter] unless @tags[:exclusion_filter].nil?
           end
+
+          #c.after(:all) do
+          #  results_folder = File.join(Dir.getwd, 'evidence')
+          #  output_file = File.join(Dir.getwd, 'evidence', 'final_results.html')
+          #  assembler = ChemistryKit::Reporting::HtmlReportAssembler.new(results_folder, output_file)
+          #  assembler.assemble
+          #end
+
           c.capture_log_messages
           c.treat_symbols_as_metadata_keys_with_true_values = true
           c.order = 'random'
@@ -219,7 +228,7 @@ module ChemistryKit
           c.output_stream = $stdout
 
           # for rspec-retry
-          c.verbose_retry = true # for rspec-retry
+          c.verbose_retry = true
           c.default_retry_count = config.retries_on_failure
 
           html_log_name = "results.html"
@@ -234,7 +243,7 @@ module ChemistryKit
 
       def rspec_parallel(beakers, concurrency)
         args = beakers + ['--parallel-test', concurrency.to_s]
-        ::RSpec::Parallel::Runner.run(args)
+        ::ParallelSplitTest::Runner.run(args)
       end
 
       def run_rspec(beakers)
