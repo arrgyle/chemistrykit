@@ -253,9 +253,13 @@ module ChemistryKit
               ChemistryKit::SplitTesting::ProviderFactory.build(config.split_testing).split(@driver)
             end
           end
-          c.after(:each) do
+          c.after(:each) do |x|
             if example.exception.nil? == false
               @job.finish failed: true, failshot: @config.screenshot_on_fail
+              Dir[@job.get_evidence_folder+"/*"].each do |filename|
+                next if File.directory? filename 
+                x.attach_file filename.split('/').last, File.new(filename)
+              end            
             else
               @job.finish passed: true
             end
