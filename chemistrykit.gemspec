@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.email         = ['dave@arrgyle.com', 'jason@arrgyle.com']
   s.homepage      = 'https://github.com/arrgyle/chemistrykit'
   s.summary       = 'A simple and opinionated web testing framework for Selenium that follows convention over configuration.'
-  s.description   = 'Merged various pull requests including subfolders in beaker directory'
+  s.description   = 'Pulled in latest version of selenium-connect to address connection issues in Firefox'
   s.license       = 'MIT'
 
   s.files         = `git ls-files`.split($/)
