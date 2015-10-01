@@ -3,6 +3,7 @@
 require 'time'
 require 'builder'
 require 'rspec/core/formatters/base_formatter'
+require 'nokogiri'
 
 # An RSpec formatter for generating results in JUnit format
 # updated from https://github.com/natritmeyer/yarjuf
@@ -15,16 +16,26 @@ module ChemistryKit
       def initialize(output)
         super output
         @test_suite_results = {}
+        @test_timestamps = {}
         @builder = Builder::XmlMarkup.new indent: 2
       end
 
+      def example_started(example)
+        beaker = JUnitFormatter.root_group_name_for(example)
+        test_name = JUnitFormatter.slugify(beaker + '_' + example.description)
+        @test_timestamps[test_name] = Time.now.iso8601
+        @process = ENV['TEST_ENV_NUMBER']
+      end
+
+      def example_group_started(example_group)
+        
+      end
+
       def example_passed(example)
-        puts 'PASSED ' + example.description
         add_to_test_suite_results example
       end
 
       def example_failed(example)
-        puts 'FAILED'
         add_to_test_suite_results example
       end
 
@@ -35,12 +46,13 @@ module ChemistryKit
       def dump_summary(duration, example_count, failure_count, pending_count)
         unless example_count == 0
           build_results duration, example_count, failure_count, pending_count
-          output.puts @builder.target!
+          if @process == ""
+            @process = 0
+          end
+          junit_path = output.path.split("0.xml").first + @process.to_s + ".xml"
+          junit_output = File.exists?(junit_path) ? File.open(junit_path, "w") : File.new(junit_path, "w")
+          junit_output.puts @builder.target!
         end
-      end
-
-      def example_group_finished(example_group)
-        puts "FINISHED BEAKER " + example_group.description
       end
 
       protected
@@ -107,7 +119,7 @@ module ChemistryKit
         execution_time = test.metadata[:execution_result][:run_time]
         test_status = test.metadata[:execution_result][:status]
 
-        @builder.testcase name: test_name, time: execution_time do
+        @builder.testcase name: test_name, time: execution_time, timestamp: @test_timestamps[test_name] do
           case test_status
           when 'pending' then @builder.skipped
           when 'failed' then build_failed_test test
