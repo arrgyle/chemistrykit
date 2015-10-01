@@ -18,7 +18,7 @@ module ChemistryKit
       end
 
       def assemble
-        result_files = Dir.glob(File.join(@results_path, 'results.html'))
+        result_files = Dir.glob(File.join(@results_path, 'results_*.html'))
 
         result_files.each do |file|
           doc = Nokogiri.HTML(open(file))
@@ -31,7 +31,7 @@ module ChemistryKit
           end
 
           doc.css('.example-group').each do |group|
-            @groups << group
+            @groups << group unless @groups.include? group
           end
         end
 
@@ -43,11 +43,11 @@ module ChemistryKit
           file.write '<!--[if IE 8]>         <html class="no-js lt-ie9" lang="en" > <![endif]-->'
           file.write '<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->'
 
-            file.write get_report_head status
+          file.write get_report_head status
           file.write '<body>'
-            file.write get_report_header
-            file.write '<div class="report">'
-              file.write get_report_summary status, @groups.count, @total_reactions, @total_failures, @total_pending, @total_duration
+          file.write get_report_header
+          file.write '<div class="report">'
+          file.write get_report_summary status, @groups.count, @total_reactions, @total_failures, @total_pending, @total_duration
 
           @groups.each do |group|
             file.write group

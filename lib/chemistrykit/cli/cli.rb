@@ -3,7 +3,7 @@
 require 'thor'
 require 'rspec'
 require 'rspec/retry'
-require 'rspec/parallel'
+#require 'rspec/parallel'
 require 'chemistrykit/cli/new'
 require 'chemistrykit/cli/formula'
 require 'chemistrykit/cli/beaker'
@@ -16,7 +16,6 @@ require 'selenium_connect'
 require 'chemistrykit/configuration'
 require 'chemistrykit/rspec/j_unit_formatter'
 
-require 'parallel_split_test/runner'
 require 'rspec/core/formatters/html_formatter'
 require 'chemistrykit/rspec/html_formatter'
 
@@ -68,12 +67,12 @@ module ChemistryKit
 
         # based on concurrency parameter run tests
         if config.concurrency > 1
-          exit_code = rspec_parallel beakers, config.concurrency
+          exit_code = run_parallel beakers, config.concurrency
         else
           exit_code = run_rspec beakers
         end
   
-        #process_html
+        process_html
         exit_code
       end
       
@@ -119,7 +118,6 @@ module ChemistryKit
 
       # rubocop:disable MethodLength
       def rspec_config(config) 
-        puts 'RSPEC CONFIG'
         ::RSpec.configure do |c|
           c.before(:all) do
             @config = config
@@ -133,7 +131,6 @@ module ChemistryKit
 
             # override log path with be beaker sub path
             sc_config = @config.selenium_connect.dup
-            puts sc_config
             sc_config[:log] += "/#{beaker_name}"
             beaker_path = File.join(Dir.getwd, sc_config[:log])
             Dir.mkdir beaker_path unless File.exists?(beaker_path)
@@ -170,7 +167,6 @@ module ChemistryKit
             repo = ChemistryKit::Chemist::Repository::CsvChemistRepository.new chemist_data_paths
             # make the formula lab available
             @formula_lab = ChemistryKit::Formula::FormulaLab.new @driver, repo, File.join(Dir.getwd, 'formulas')
-            puts "EXAMPLE " + test_name
             example.run
           end
           c.before(:each) do
@@ -182,7 +178,6 @@ module ChemistryKit
           
           c.after(:each) do
             test_name = example.description.downcase.strip.gsub(' ', '_').gsub(/[^\w-]/, '')
-            puts "KILLING " + test_name
             if example.exception.nil? == false
               @job.finish failed: true, failshot: @config.screenshot_on_fail
             else
@@ -203,35 +198,29 @@ module ChemistryKit
             c.filter_run_excluding @tags[:exclusion_filter] unless @tags[:exclusion_filter].nil?
           end
 
-          #c.after(:all) do
-          #  results_folder = File.join(Dir.getwd, 'evidence')
-          #  output_file = File.join(Dir.getwd, 'evidence', 'final_results.html')
-          #  assembler = ChemistryKit::Reporting::HtmlReportAssembler.new(results_folder, output_file)
-          #  assembler.assemble
-          #end
-
           c.capture_log_messages
           c.treat_symbols_as_metadata_keys_with_true_values = true
           c.order = 'random'
-          c.default_path = 'beakers'
-          c.pattern = '**/*_beaker.rb'
           c.output_stream = $stdout
-
           # for rspec-retry
           c.verbose_retry = true
           c.default_retry_count = config.retries_on_failure
 
-          html_log_name = "results.html"
-          c.add_formatter(ChemistryKit::RSpec::HtmlFormatter, File.join(Dir.getwd, config.reporting.path, html_log_name))
-          
-          junit_log_name = "junit.xml"
-          c.add_formatter(ChemistryKit::RSpec::JUnitFormatter, File.join(Dir.getwd, config.reporting.path, junit_log_name))
           c.add_formatter 'progress'
+          
+          html_log_name = "results_0.html"
+          Dir.glob(File.join(Dir.getwd, config.reporting.path, "results*")).each { |f| File.delete(f) }
+          c.add_formatter(ChemistryKit::RSpec::HtmlFormatter, File.join(Dir.getwd, config.reporting.path, html_log_name))
+
+          junit_log_name = "junit_0.xml"
+          Dir.glob(File.join(Dir.getwd, config.reporting.path, "junit*")).each { |f| File.delete(f) }
+          c.add_formatter(ChemistryKit::RSpec::JUnitFormatter, File.join(Dir.getwd, config.reporting.path, junit_log_name))
         end
       end
       # rubocop:enable MethodLength
 
-      def rspec_parallel(beakers, concurrency)
+      def run_parallel(beakers, concurrency)
+        require 'parallel_split_test/runner'
         args = beakers + ['--parallel-test', concurrency.to_s]
         ::ParallelSplitTest::Runner.run(args)
       end
