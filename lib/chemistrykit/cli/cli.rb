@@ -21,6 +21,8 @@ require 'chemistrykit/rspec/html_formatter'
 
 require 'chemistrykit/reporting/html_report_assembler'
 
+require 'allure-rspec'
+
 require 'rubygems'
 require 'logging'
 require 'rspec/logging_helper'
@@ -117,8 +119,21 @@ module ChemistryKit
       end
 
       # rubocop:disable MethodLength
-      def rspec_config(config) 
+      def rspec_config(config) # Some of these bits work and others don't
+        ::AllureRSpec.configure do |c|
+          c.output_dir = "results"
+        end
+
         ::RSpec.configure do |c|
+          c.capture_log_messages
+
+          c.include AllureRSpec::Adaptor
+          c.treat_symbols_as_metadata_keys_with_true_values = true
+          unless options[:all]
+            c.filter_run @tags[:filter] unless @tags[:filter].nil?
+            c.filter_run_excluding @tags[:exclusion_filter] unless @tags[:exclusion_filter].nil?
+          end
+          
           c.before(:all) do
             @config = config
             ENV['BASE_URL'] = @config.base_url # assign base url to env variable for formulas
@@ -175,22 +190,18 @@ module ChemistryKit
               @driver.get(@config.basic_auth.https_url) if @config.basic_auth.https?
             end
           end
-          
-          c.after(:each) do
-            test_name = example.description.downcase.strip.gsub(' ', '_').gsub(/[^\w-]/, '')
+
+          c.after(:each) do |x|
             if example.exception.nil? == false
               @job.finish failed: true, failshot: @config.screenshot_on_fail
+              Dir[@job.get_evidence_folder+"/*"].each do |filename|
+                next if File.directory? filename 
+                x.attach_file filename.split('/').last, File.new(filename)
+              end            
             else
               @job.finish passed: true
             end
             @sc.finish
-            log = File.open(File.join(@test_path, 'test_steps.log'), 'w')
-
-            lines  = @log_output.readlines
-            lines.each do |line|
-              log.write(line)
-            end
-            log.close
           end
 
           unless options[:all]
