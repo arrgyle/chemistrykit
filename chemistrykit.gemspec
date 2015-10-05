@@ -27,7 +27,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'parallel_split_test'
   s.add_dependency 'parallel', '~> 0.7.0'
   s.add_dependency 'rspec-retry', '~> 0.2.1'
-  s.add_dependency 'nokogiri', '~> 1.6.0'
+  s.add_dependency 'nokogiri', '~> 1.5'
   s.add_dependency 'syntax'
   s.add_dependency 'pygments.rb', '~> 0.5.2'
   s.add_dependency 'logging'
