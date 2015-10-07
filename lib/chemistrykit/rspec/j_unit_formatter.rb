@@ -49,7 +49,7 @@ module ChemistryKit
           if @process == ""
             @process = 0
           end
-          junit_path = output.path.split("0.xml").first + @process.to_s + ".xml"
+          junit_path = output.path.split(".xml").first + '_' + @process.to_s + ".xml"
           junit_output = File.exists?(junit_path) ? File.open(junit_path, "w") : File.new(junit_path, "w")
           junit_output.puts @builder.target!
         end

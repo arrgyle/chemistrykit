@@ -215,11 +215,11 @@ module ChemistryKit
 
           c.add_formatter 'progress'
           
-          html_log_name = "results_0.html"
+          html_log_name = "results.html"
           Dir.glob(File.join(Dir.getwd, config.reporting.path, "results*")).each { |f| File.delete(f) }
           c.add_formatter(ChemistryKit::RSpec::HtmlFormatter, File.join(Dir.getwd, config.reporting.path, html_log_name))
 
-          junit_log_name = "junit_0.xml"
+          junit_log_name = "junit.xml"
           Dir.glob(File.join(Dir.getwd, config.reporting.path, "junit*")).each { |f| File.delete(f) }
           c.add_formatter(ChemistryKit::RSpec::JUnitFormatter, File.join(Dir.getwd, config.reporting.path, junit_log_name))
         end
