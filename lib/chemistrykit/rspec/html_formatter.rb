@@ -119,7 +119,7 @@ module ChemistryKit
           if @process == ""
             @process = 0  
           end
-          results_path = @output.path.split("0.html").first + @process.to_s + ".html"
+          results_path = @output.path.split(".html").first + '_' + @process.to_s + ".html"
           results_output = File.exists?(results_path) ? File.open(results_path, "w") : File.new(results_path, "w")
           results_output.puts output
           #@output.puts output
@@ -258,6 +258,8 @@ module ChemistryKit
       end
 
       def render_example(status, example)
+        time = example.execution_result[:run_time]
+        time_str = (time / 60).to_i.to_s + 'm ' + (time % 60).round.to_s + 's'
         build_fragment do |doc|
           doc.div(class: "row example #{status}") do
             doc.div(class: 'large-12 columns') do
@@ -266,8 +268,8 @@ module ChemistryKit
                   doc.p { doc.text example.description.capitalize }
                 end
                 doc.div(class: 'large-3 columns text-right') do
-                  doc.p { doc.text sprintf('%.0i', example.execution_result[:run_time]) + 's' }
-                end
+                  doc.p { doc.text time_str }
+                  end
               end
               doc.div(class: 'row example-body') do
                 doc.div(class: 'large-12 columns') { yield doc }
