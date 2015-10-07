@@ -11,6 +11,7 @@ module ChemistryKit
         @results_path = results_path
         @output_file = output_file
         @groups = []
+        @testsuites = {}
         @total_reactions = 0
         @total_failures = 0
         @total_duration = 0
@@ -31,8 +32,28 @@ module ChemistryKit
           end
 
           doc.css('.example-group').each do |group|
-            @groups << group unless @groups.include? group
+            beaker = group.css('h3')
+            beaker_name = beaker.text.split(/\n/).last
+            unless @testsuites.has_key?(beaker_name)
+              @testsuites[beaker_name] = ['passing', []]
+            end
+            group.css('.example').each do |example|
+              @testsuites[beaker_name][1] << example
+              if example.attr('class').to_s.include? 'failing'
+                @testsuites[beaker_name][0] = 'failing'
+              end
+            end
           end
+        end
+
+        @testsuites.each do |key, value|
+          @groups << "<div class=\"row example-group #{value[0]}\"><div class=\"large-12 columns\">"
+          @groups << "<h3>\n<i class=\"icon-beaker\"></i>#{key}</h3>"
+          @groups << '<div class="examples">'
+          value[1].each do |x|
+            @groups << x
+          end
+          @groups << "</div></div></div>"
         end
 
         status = @total_failures > 0 ? 'failing' : 'passing'
@@ -47,7 +68,7 @@ module ChemistryKit
           file.write '<body>'
           file.write get_report_header
           file.write '<div class="report">'
-          file.write get_report_summary status, @groups.count, @total_reactions, @total_failures, @total_pending, @total_duration
+          file.write get_report_summary status, @testsuites.size, @total_reactions, @total_failures, @total_pending, @total_duration
 
           @groups.each do |group|
             file.write group
