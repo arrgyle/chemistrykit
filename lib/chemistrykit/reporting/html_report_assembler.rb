@@ -19,6 +19,24 @@ module ChemistryKit
       end
 
       def assemble
+
+        # First get total duration from jUnit timestamps
+        junit_files = Dir.glob(File.join(@results_path, 'junit_*.xml'))
+        
+        max_time = 0
+        min_time = DateTime.now.to_f
+        junit_files.each do |file|
+          doc = Nokogiri.XML(open(file))
+
+          doc.xpath('//testcase').each do |testcase|
+            time_end = DateTime.parse(testcase.attr('timestamp').to_s).to_time.to_f
+            time_start = time_end - testcase.attr('time').to_f
+            max_time = time_end if time_end > max_time
+            min_time = time_start if time_start < min_time
+          end
+        end
+        @total_duration = (max_time - min_time).to_i
+
         result_files = Dir.glob(File.join(@results_path, 'results_*.html'))
 
         result_files.each do |file|
@@ -28,7 +46,6 @@ module ChemistryKit
             @total_reactions += element['data-count'].to_i
             @total_failures += element['data-failures'].to_i
             @total_pending += element['data-pendings'].to_i
-            @total_duration += element['data-duration'].to_f
           end
 
           doc.css('.example-group').each do |group|
@@ -173,7 +190,7 @@ module ChemistryKit
                   end
                   doc.li do
                     doc.i(class: 'icon-time')
-                    doc.p { doc.text "#{ sprintf("%.1i", duration / 60) }m Duration" }
+                    doc.p { doc.text "#{ sprintf("%.1i", duration / 60) }m #{ sprintf("%.1i", duration % 60) }s Duration" }
                   end
                 end
               end
