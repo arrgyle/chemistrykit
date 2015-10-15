@@ -14,6 +14,7 @@ require 'chemistrykit/chemist/repository/csv_chemist_repository'
 require 'selenium_connect'
 require 'chemistrykit/configuration'
 require 'chemistrykit/rspec/j_unit_formatter'
+require 'chemistrykit/rspec/retry_formatter'
 
 require 'rspec/core/formatters/html_formatter'
 require 'chemistrykit/rspec/html_formatter'
@@ -194,9 +195,9 @@ module ChemistryKit
             if example.exception.nil? == false
               @job.finish failed: true, failshot: @config.screenshot_on_fail
               Dir[@job.get_evidence_folder+"/*"].each do |filename|
-                next if File.directory? filename 
+                next if File.directory? filename
                 x.attach_file filename.split('/').last, File.new(filename)
-              end            
+              end
             else
               @job.finish passed: true
             end
@@ -217,6 +218,7 @@ module ChemistryKit
           c.default_retry_count = config.retries_on_failure
 
           c.add_formatter 'progress'
+          c.add_formatter(ChemistryKit::RSpec::RetryFormatter)
           
           html_log_name = "results.html"
           Dir.glob(File.join(Dir.getwd, config.reporting.path, "results*")).each { |f| File.delete(f) }
