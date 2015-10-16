@@ -29,7 +29,7 @@ module ChemistryKit
           doc = Nokogiri.XML(open(file))
 
           doc.xpath('//testcase').each do |testcase|
-            time_end = DateTime.parse(testcase.attr('timestamp').to_s).to_time.to_f
+            time_end = DateTime.parse(testcase.attr('timestamp')).to_time.to_f
             time_start = time_end - testcase.attr('time').to_f
             max_time = time_end if time_end > max_time
             min_time = time_start if time_start < min_time
