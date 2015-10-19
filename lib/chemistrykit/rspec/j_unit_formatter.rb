@@ -21,9 +21,6 @@ module ChemistryKit
       end
 
       def example_started(example)
-        beaker = JUnitFormatter.root_group_name_for(example)
-        test_name = JUnitFormatter.slugify(beaker + '_' + example.description)
-        @test_timestamps[test_name] = Time.now.iso8601
         @process = ENV['TEST_ENV_NUMBER']
       end
 
@@ -59,6 +56,8 @@ module ChemistryKit
 
       def add_to_test_suite_results(example)
         suite_name = JUnitFormatter.root_group_name_for(example)
+        test_name = JUnitFormatter.slugify(suite_name + '_' + example.description)
+        @test_timestamps[test_name] = Time.now.iso8601
         @test_suite_results[suite_name] = [] unless @test_suite_results.keys.include? suite_name
         @test_suite_results[suite_name] << example
       end
