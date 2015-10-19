@@ -259,7 +259,11 @@ module ChemistryKit
 
       def render_example(status, example)
         time = example.execution_result[:run_time]
-        time_str = (time / 60).to_i.to_s + 'm ' + (time % 60).round.to_s + 's'
+        if (time / 60).to_i > 0
+          time_str = (time / 60).to_i.to_s + 'm ' + (time % 60).round.to_s + 's'
+        else
+          time_str = time.round.to_s + 's'
+        end
         build_fragment do |doc|
           doc.div(class: "row example #{status}") do
             doc.div(class: 'large-12 columns') do
