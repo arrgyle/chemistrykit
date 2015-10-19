@@ -3,7 +3,6 @@
 require 'thor'
 require 'rspec'
 require 'rspec/retry'
-#require 'rspec/parallel'
 require 'chemistrykit/cli/new'
 require 'chemistrykit/cli/formula'
 require 'chemistrykit/cli/beaker'
@@ -120,6 +119,10 @@ module ChemistryKit
 
       # rubocop:disable MethodLength
       def rspec_config(config) 
+        ::AllureRSpec.configure do |c|
+          c.output_dir = "results"
+        end
+
         ::RSpec.configure do |c|
           c.capture_log_messages
 
@@ -186,7 +189,7 @@ module ChemistryKit
             end
           end
           
-          c.after(:each) do
+          c.after(:each) do |x|
             test_name = example.description.downcase.strip.gsub(' ', '_').gsub(/[^\w-]/, '')
             if example.exception.nil? == false
               @job.finish failed: true, failshot: @config.screenshot_on_fail
