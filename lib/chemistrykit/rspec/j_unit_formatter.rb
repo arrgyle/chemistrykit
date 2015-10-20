@@ -16,12 +16,14 @@ module ChemistryKit
       def initialize(output)
         super output
         @test_suite_results = {}
-        @test_timestamps = {}
         @builder = Builder::XmlMarkup.new indent: 2
       end
 
       def example_started(example)
         @process = ENV['TEST_ENV_NUMBER']
+        if @process == nil
+          @process = 0
+        end
       end
 
       def example_passed(example)
@@ -39,9 +41,6 @@ module ChemistryKit
       def dump_summary(duration, example_count, failure_count, pending_count)
         unless example_count == 0
           build_results duration, example_count, failure_count, pending_count
-          if @process == ""
-            @process = 0
-          end
           junit_path = output.path.split(".xml").first + '_' + @process.to_s + ".xml"
           junit_output = File.exists?(junit_path) ? File.open(junit_path, "w") : File.new(junit_path, "w")
           junit_output.puts @builder.target!
@@ -53,7 +52,6 @@ module ChemistryKit
       def add_to_test_suite_results(example)
         suite_name = JUnitFormatter.root_group_name_for(example)
         test_name = JUnitFormatter.slugify(suite_name + '_' + example.description)
-        @test_timestamps[test_name] = Time.now.iso8601
         @test_suite_results[suite_name] = [] unless @test_suite_results.keys.include? suite_name
         @test_suite_results[suite_name] << example
       end
@@ -83,7 +81,7 @@ module ChemistryKit
 
       def build_results(duration, example_count, failure_count, pending_count)
         @builder.instruct! :xml, version: '1.0', encoding: 'UTF-8'
-        @builder.testsuites errors: 0, failures: failure_count, skipped: pending_count, tests: example_count, time: duration, timestamp: Time.now.iso8601 do
+        @builder.testsuites errors: 0, failures: failure_count, skipped: pending_count, tests: example_count, time: duration do
           build_all_suites
         end
       end
@@ -114,7 +112,7 @@ module ChemistryKit
         execution_time = test.metadata[:execution_result][:run_time]
         test_status = test.metadata[:execution_result][:status]
 
-        @builder.testcase name: test_name, time: execution_time, timestamp: @test_timestamps[test_name] do
+        @builder.testcase name: test_name, time: execution_time do
           case test_status
           when 'pending' then @builder.skipped
           when 'failed' then build_failed_test test

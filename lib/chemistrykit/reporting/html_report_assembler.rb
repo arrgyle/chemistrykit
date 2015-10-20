@@ -19,26 +19,19 @@ module ChemistryKit
       end
 
       def assemble
-        # First get total duration from jUnit timestamps
+        # First get total duration from jUnit times
         junit_dummy = File.join(@results_path, 'junit.xml')
         File.delete(junit_dummy)
 
         junit_files = Dir.glob(File.join(@results_path, 'junit_*.xml'))        
-        max_time = 0
-        min_time = DateTime.now.to_f
         junit_files.each do |file|
           doc = Nokogiri.XML(open(file))
-
+          total_time = 0
           doc.xpath('//testcase').each do |testcase|
-            unless testcase.attr('timestamp').to_s == ""
-              time_end = DateTime.parse(testcase.attr('timestamp')).to_time.to_f
-              time_start = time_end - testcase.attr('time').to_f
-              max_time = time_end if time_end > max_time
-              min_time = time_start if time_start < min_time
-            end
+            total_time += testcase.attr('time').to_f
           end
+          @total_duration = total_time if total_time > @total_duration
         end
-        @total_duration = (max_time - min_time).to_i
 
         result_files = Dir.glob(File.join(@results_path, 'results_*.html'))
 

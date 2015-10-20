@@ -16,9 +16,6 @@ module ChemistryKit
         @testcases_data = {}
       end
 
-      def message(message)
-      end
-
       def start(example_count)
         super(example_count)
         @output_html = ''
@@ -52,6 +49,9 @@ module ChemistryKit
       def example_started(example)
         super(example)
         @process = ENV['TEST_ENV_NUMBER']
+        if @process == nil
+          @process = 0
+        end
       end
 
       def example_passed(example)
@@ -115,9 +115,6 @@ module ChemistryKit
               'data-failures' => failure_count.to_s,
               'data-pendings' => pending_count.to_s
               ) { doc << @output_html }
-          end
-          if @process == ""
-            @process = 0  
           end
           results_path = @output.path.split(".html").first + '_' + @process.to_s + ".html"
           results_output = File.exists?(results_path) ? File.open(results_path, "w") : File.new(results_path, "w")
