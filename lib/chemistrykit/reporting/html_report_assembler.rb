@@ -19,10 +19,11 @@ module ChemistryKit
       end
 
       def assemble
-
         # First get total duration from jUnit timestamps
-        junit_files = Dir.glob(File.join(@results_path, 'junit_*.xml'))
-        
+        junit_dummy = File.join(@results_path, 'junit.xml')
+        File.delete(junit_dummy)
+
+        junit_files = Dir.glob(File.join(@results_path, 'junit_*.xml'))        
         max_time = 0
         min_time = DateTime.now.to_f
         junit_files.each do |file|

@@ -24,10 +24,6 @@ module ChemistryKit
         @process = ENV['TEST_ENV_NUMBER']
       end
 
-      def example_group_started(example_group)
-        
-      end
-
       def example_passed(example)
         add_to_test_suite_results example
       end
