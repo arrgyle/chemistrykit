@@ -11,6 +11,7 @@ module ChemistryKit
         @results_path = results_path
         @output_file = output_file
         @groups = []
+        @testsuites = {}
         @total_reactions = 0
         @total_failures = 0
         @total_duration = 0
@@ -18,6 +19,20 @@ module ChemistryKit
       end
 
       def assemble
+        # First get total duration from jUnit times
+        junit_dummy = File.join(@results_path, 'junit.xml')
+        File.delete(junit_dummy)
+
+        junit_files = Dir.glob(File.join(@results_path, 'junit_*.xml'))        
+        junit_files.each do |file|
+          doc = Nokogiri.XML(open(file))
+          total_time = 0
+          doc.xpath('//testcase').each do |testcase|
+            total_time += testcase.attr('time').to_f
+          end
+          @total_duration = total_time if total_time > @total_duration
+        end
+
         result_files = Dir.glob(File.join(@results_path, 'results_*.html'))
 
         result_files.each do |file|
@@ -27,12 +42,31 @@ module ChemistryKit
             @total_reactions += element['data-count'].to_i
             @total_failures += element['data-failures'].to_i
             @total_pending += element['data-pendings'].to_i
-            @total_duration += element['data-duration'].to_f
           end
 
           doc.css('.example-group').each do |group|
-            @groups << group
+            beaker = group.css('h3')
+            beaker_name = beaker.text.split(/\n/).last
+            unless @testsuites.has_key?(beaker_name)
+              @testsuites[beaker_name] = ['passing', []]
+            end
+            group.css('.example').each do |example|
+              @testsuites[beaker_name][1] << example
+              if example.attr('class').to_s.include? 'failing'
+                @testsuites[beaker_name][0] = 'failing'
+              end
+            end
           end
+        end
+
+        @testsuites.each do |key, value|
+          @groups << "<div class=\"row example-group #{value[0]}\"><div class=\"large-12 columns\">"
+          @groups << "<h3>\n<i class=\"icon-beaker\"></i>#{key}</h3>"
+          @groups << '<div class="examples">'
+          value[1].each do |x|
+            @groups << x
+          end
+          @groups << "</div></div></div>"
         end
 
         status = @total_failures > 0 ? 'failing' : 'passing'
@@ -43,11 +77,11 @@ module ChemistryKit
           file.write '<!--[if IE 8]>         <html class="no-js lt-ie9" lang="en" > <![endif]-->'
           file.write '<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->'
 
-            file.write get_report_head status
+          file.write get_report_head status
           file.write '<body>'
-            file.write get_report_header
-            file.write '<div class="report">'
-              file.write get_report_summary status, @groups.count, @total_reactions, @total_failures, @total_pending, @total_duration
+          file.write get_report_header
+          file.write '<div class="report">'
+          file.write get_report_summary status, @testsuites.size, @total_reactions, @total_failures, @total_pending, @total_duration
 
           @groups.each do |group|
             file.write group
@@ -152,7 +186,7 @@ module ChemistryKit
                   end
                   doc.li do
                     doc.i(class: 'icon-time')
-                    doc.p { doc.text "#{ sprintf("%.1i", duration / 60) }m Duration" }
+                    doc.p { doc.text "#{ sprintf("%.1i", duration / 60) }m #{ sprintf("%.1i", duration % 60) }s Duration" }
                   end
                 end
               end
