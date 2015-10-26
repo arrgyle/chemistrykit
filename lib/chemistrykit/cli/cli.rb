@@ -14,6 +14,7 @@ require 'chemistrykit/chemist/repository/csv_chemist_repository'
 require 'selenium_connect'
 require 'chemistrykit/configuration'
 require 'chemistrykit/rspec/j_unit_formatter'
+require 'chemistrykit/rspec/retry_formatter'
 
 require 'rspec/core/formatters/html_formatter'
 require 'chemistrykit/rspec/html_formatter'
@@ -222,7 +223,8 @@ module ChemistryKit
           c.default_retry_count                             = config.retries_on_failure
 
           c.add_formatter 'progress'
-
+          c.add_formatter(ChemistryKit::RSpec::RetryFormatter)
+          
           html_log_name = "results.html"
           Dir.glob(File.join(Dir.getwd, config.reporting.path, "results*")).each { |f| File.delete(f) }
           c.add_formatter(ChemistryKit::RSpec::HtmlFormatter, File.join(Dir.getwd, config.reporting.path, html_log_name))
