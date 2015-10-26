@@ -20,6 +20,7 @@ require 'rspec/core/formatters/html_formatter'
 require 'chemistrykit/rspec/html_formatter'
 
 require 'chemistrykit/reporting/html_report_assembler'
+require 'chemistrykit/split_testing/provider_factory'
 
 require 'allure-rspec'
 
@@ -73,17 +74,17 @@ module ChemistryKit
         else
           exit_code = run_rspec beakers
         end
-  
+
         process_html
         exit_code
       end
-      
+
       protected
 
       def process_html
         results_folder = File.join(Dir.getwd, 'evidence')
-        output_file = File.join(Dir.getwd, 'evidence', 'final_results.html')
-        assembler = ChemistryKit::Reporting::HtmlReportAssembler.new(results_folder, output_file)
+        output_file    = File.join(Dir.getwd, 'evidence', 'final_results.html')
+        assembler      = ChemistryKit::Reporting::HtmlReportAssembler.new(results_folder, output_file)
         assembler.assemble
       end
 
@@ -109,17 +110,17 @@ module ChemistryKit
           filter_type = tag.start_with?('~') ? :exclusion_filter : :filter
 
           name, value = tag.gsub(/^(~@|~|@)/, '').split(':')
-          name = name.to_sym
+          name        = name.to_sym
 
-          value = true if value.nil?
+          value       = true if value.nil?
 
-          @tags[filter_type] ||= {}
+          @tags[filter_type]       ||= {}
           @tags[filter_type][name] = value
         end unless selected_tags.nil?
       end
 
       # rubocop:disable MethodLength
-      def rspec_config(config) 
+      def rspec_config(config)
         ::AllureRSpec.configure do |c|
           c.output_dir = "results"
         end
@@ -134,33 +135,33 @@ module ChemistryKit
             c.filter_run_excluding @tags[:exclusion_filter] unless @tags[:exclusion_filter].nil?
           end
           c.before(:all) do
-            @config = config
+            @config         = config
             ENV['BASE_URL'] = @config.base_url # assign base url to env variable for formulas
           end
-          
+
           c.around(:each) do |example|
             # create the beaker name from the example data
-            beaker_name = example.metadata[:example_group][:description_args].first.downcase.strip.gsub(' ', '_').gsub(/[^\w-]/, '')
-            test_name = example.metadata[:full_description].downcase.strip.gsub(' ', '_').gsub(/[^\w-]/, '')
+            beaker_name     = example.metadata[:example_group][:description_args].first.downcase.strip.gsub(' ', '_').gsub(/[^\w-]/, '')
+            test_name       = example.metadata[:full_description].downcase.strip.gsub(' ', '_').gsub(/[^\w-]/, '')
 
             # override log path with be beaker sub path
-            sc_config = @config.selenium_connect.dup
+            sc_config       = @config.selenium_connect.dup
             sc_config[:log] += "/#{beaker_name}"
-            beaker_path = File.join(Dir.getwd, sc_config[:log])
+            beaker_path     = File.join(Dir.getwd, sc_config[:log])
             Dir.mkdir beaker_path unless File.exists?(beaker_path)
             sc_config[:log] += "/#{test_name}"
-            @test_path = File.join(Dir.getwd, sc_config[:log])
+            @test_path      = File.join(Dir.getwd, sc_config[:log])
             FileUtils.rm_rf(@test_path) if File.exists?(@test_path)
             Dir.mkdir @test_path
 
             # set the tags and permissions if sauce
             if sc_config[:host] == 'saucelabs' || sc_config[:host] == 'appium'
-              tags = example.metadata.reject do |key, value|
+              tags       = example.metadata.reject do |key, value|
                 [:example_group, :example_group_block, :description_args, :caller, :execution_result, :full_description].include? key
               end
               sauce_opts = {}
               sauce_opts.merge!(public: tags.delete(:public)) if tags.key?(:public)
-              sauce_opts.merge!(tags: tags.map { |key, value| "#{key}:#{value}"}) unless tags.empty?
+              sauce_opts.merge!(tags: tags.map { |key, value| "#{key}:#{value}" }) unless tags.empty?
 
               if sc_config[:sauce_opts]
                 sc_config[:sauce_opts].merge!(sauce_opts) unless sauce_opts.empty?
@@ -171,16 +172,16 @@ module ChemistryKit
             end
 
             # configure and start sc
-            configuration = SeleniumConnect::Configuration.new sc_config
-            @sc = SeleniumConnect.start configuration
-            @job = @sc.create_job # create a new job
-            @driver = @job.start name: test_name
+            configuration      = SeleniumConnect::Configuration.new sc_config
+            @sc                = SeleniumConnect.start configuration
+            @job               = @sc.create_job # create a new job
+            @driver            = @job.start name: test_name
 
             # TODO: this is messy, and could be refactored out into a static on the lab
             chemist_data_paths = Dir.glob(File.join(Dir.getwd, 'chemists', '*.csv'))
-            repo = ChemistryKit::Chemist::Repository::CsvChemistRepository.new chemist_data_paths
+            repo               = ChemistryKit::Chemist::Repository::CsvChemistRepository.new chemist_data_paths
             # make the formula lab available
-            @formula_lab = ChemistryKit::Formula::FormulaLab.new @driver, repo, File.join(Dir.getwd, 'formulas')
+            @formula_lab       = ChemistryKit::Formula::FormulaLab.new @driver, repo, File.join(Dir.getwd, 'formulas')
             example.run
           end
           c.before(:each) do
@@ -188,8 +189,12 @@ module ChemistryKit
               @driver.get(@config.basic_auth.http_url) if @config.basic_auth.http?
               @driver.get(@config.basic_auth.https_url) if @config.basic_auth.https?
             end
+
+            if config.split_testing
+              ChemistryKit::SplitTesting::ProviderFactory.build(config.split_testing).split(@driver)
+            end
           end
-          
+
           c.after(:each) do |x|
             test_name = example.description.downcase.strip.gsub(' ', '_').gsub(/[^\w-]/, '')
             if example.exception.nil? == false
@@ -211,11 +216,11 @@ module ChemistryKit
 
           c.capture_log_messages
           c.treat_symbols_as_metadata_keys_with_true_values = true
-          c.order = 'random'
-          c.output_stream = $stdout
+          c.order                                           = 'random'
+          c.output_stream                                   = $stdout
           # for rspec-retry
-          c.verbose_retry = true
-          c.default_retry_count = config.retries_on_failure
+          c.verbose_retry                                   = true
+          c.default_retry_count                             = config.retries_on_failure
 
           c.add_formatter 'progress'
           c.add_formatter(ChemistryKit::RSpec::RetryFormatter)
@@ -229,6 +234,7 @@ module ChemistryKit
           c.add_formatter(ChemistryKit::RSpec::JUnitFormatter, File.join(Dir.getwd, config.reporting.path, junit_log_name))
         end
       end
+
       # rubocop:enable MethodLength
 
       def run_parallel(beakers, concurrency)
