@@ -148,7 +148,9 @@ module ChemistryKit
             sc_config       = @config.selenium_connect.dup
             sc_config[:log] += "/#{beaker_name}"
             beaker_path     = File.join(Dir.getwd, sc_config[:log])
-            Dir.mkdir beaker_path unless File.exists?(beaker_path)
+            unless File.exists?(beaker_path)
+              Dir.mkdir beaker_path
+            end
             sc_config[:log] += "/#{test_name}"
             @test_path      = File.join(Dir.getwd, sc_config[:log])
             FileUtils.rm_rf(@test_path) if File.exists?(@test_path)
