@@ -61,7 +61,7 @@ module ChemistryKit
 
         # get those beakers that should be executed
         beakers = options['beakers'] ? options['beakers'] : Dir.glob(File.join(Dir.getwd, 'beakers/**/*')).select { |file| !File.directory?(file) }
-
+        
         # if tags are explicity defined, apply them to all beakers
         setup_tags(options['tag'])
 
@@ -148,9 +148,7 @@ module ChemistryKit
             sc_config       = @config.selenium_connect.dup
             sc_config[:log] += "/#{beaker_name}"
             beaker_path     = File.join(Dir.getwd, sc_config[:log])
-            unless File.exists?(beaker_path)
-              Dir.mkdir beaker_path
-            end
+            Dir.mkdir beaker_path unless Dir.exist?(beaker_path)
             sc_config[:log] += "/#{test_name}"
             @test_path      = File.join(Dir.getwd, sc_config[:log])
             FileUtils.rm_rf(@test_path) if File.exists?(@test_path)
