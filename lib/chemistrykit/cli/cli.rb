@@ -148,11 +148,17 @@ module ChemistryKit
             sc_config       = @config.selenium_connect.dup
             sc_config[:log] += "/#{beaker_name}"
             beaker_path     = File.join(Dir.getwd, sc_config[:log])
-            Dir.mkdir beaker_path unless Dir.exist?(beaker_path)
+            
+            # Current parallelization causes mkdir to still fail sometimes
+            begin
+              Dir.mkdir beaker_path unless File.exists?(beaker_path)
+            rescue EEXIST
+            end
+            
             sc_config[:log] += "/#{test_name}"
-            @test_path      = File.join(Dir.getwd, sc_config[:log])
-            FileUtils.rm_rf(@test_path) if File.exists?(@test_path)
-            Dir.mkdir @test_path
+            test_path      = File.join(Dir.getwd, sc_config[:log])
+            FileUtils.rm_rf(test_path) if File.exists?(test_path)
+            Dir.mkdir test_path
 
             # set the tags and permissions if sauce
             if sc_config[:host] == 'saucelabs' || sc_config[:host] == 'appium'
