@@ -152,7 +152,7 @@ module ChemistryKit
             # Current parallelization causes mkdir to still fail sometimes
             begin
               Dir.mkdir beaker_path unless File.exists?(beaker_path)
-            rescue EEXIST
+            rescue Errno::EEXIST
             end
             
             sc_config[:log] += "/#{test_name}"
