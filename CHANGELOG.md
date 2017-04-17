@@ -1,4 +1,4 @@
-#3.10.0 (2013-09-17)
+# 3.10.0 (2013-09-17)
 Merged various pull requests including subfolders in beaker directory
 
 - Bumped version to 3.10.0 to prepare for release.
@@ -14,14 +14,14 @@ Merged various pull requests including subfolders in beaker directory
 - bump selenium-webdriver to overcome a loading error for rubyzip
 - Beaker directory now supports sub-directories
 
-#3.9.1 (2013-08-26)
+# 3.9.1 (2013-08-26)
 small fix to gemfile
 
 - Bumped version to 3.9.1 to prepare for release.
 - updated gemfile
 - removed dupe log from changelog
 
-#3.9.0 (2013-08-26)
+# 3.9.0 (2013-08-26)
 Improved reporting features and configuration for sauce permissions
 
 - gg
@@ -37,27 +37,27 @@ Improved reporting features and configuration for sauce permissions
 - removed specific log specification from system tests, cleaned up log configuration to just default to evidence and refactoried the cli a small bit to support it.
 - updated bundle and fixed new code quality error
 
-#3.9.0-rc.3 (2013-08-19)
+# 3.9.0-rc.3 (2013-08-19)
 - added toggle for parts of html reports
 - added a fix to allow jenkins ci server to show the html report images
 - integrated new selenium connect
 - updates to configurations
 - integrated optimizely opt out
 
-#3.9.0-rc.2 (2013-08-14)
+# 3.9.0-rc.2 (2013-08-14)
 - Added Basic Auth Support. Preserving release candidate numbering since there are improvements to be made to HTTP reporting
 
-#3.9.0-rc.1 (2013-08-12)
+# 3.9.0-rc.1 (2013-08-12)
 Release candidate with new features including
 - Consolidated html report
 - Updates to chemists to support multiple chemists from being joined
 
-###Known Issues
+### Known Issues
 - When running chrome locally the chromedriver logs do not always get placed in the correct places, likely due to the current approach of moving them around
 - There is a lack of sufficient tests around the reporting functionality, so there could be some sporadic behavior when it comes to the consolidation and formatting of the main html report
 - Configuration of specific log_path locations and output names is not fully supported at this time. Both an html report and junit.xml are output by default.
 
-#3.8.1 (2013-08-09)
+# 3.8.1 (2013-08-09)
 Cleaned up chemists to use same instance in the formulas and bug fixes
 
 - Bumped version to 3.8.1 to prepare for release.
@@ -65,7 +65,7 @@ Cleaned up chemists to use same instance in the formulas and bug fixes
 - updated tests and chemist to reflect the mutability of type but not key
 - improved chemists by ensuring the same chemist object is always in play so that different formulas that update it state work together, also fixed a small bug with the loading of formulas by name
 
-#3.8.0 (2013-08-05)
+# 3.8.0 (2013-08-05)
 Implemented the chemists feature to add user data management as well as a simplified strategy for loading formulas
 
 - Bumped version to 3.8.0 to prepare for release.
@@ -86,7 +86,7 @@ Implemented the chemists feature to add user data management as well as a simpli
 - updated selenium connect version
 - added animoto mention to friends section
 
-#3.7.0 (2013-07-24)
+# 3.7.0 (2013-07-24)
 updated evidence to put in test based folders and added configuration for the retry functionality
 
 - Bumped version to 3.7.0 to prepare for release.
@@ -98,7 +98,7 @@ updated evidence to put in test based folders and added configuration for the re
 - added retry to configuration file and run time parameters updated docs and tests
 - updated sc version
 
-#3.6.0 (2013-07-20)
+# 3.6.0 (2013-07-20)
 Added the ability for tests to be retried on failure. A single retry will be attempted by default and the output will be verbose.
 
 - Bumped version to 3.6.0 to prepare for release.
@@ -109,26 +109,26 @@ Added the ability for tests to be retried on failure. A single retry will be att
 - Added a config attribute to brew for verbose retry
 - Added rspec-retry
 
-#3.5.0 (2013-07-15)
+# 3.5.0 (2013-07-15)
 updated logging to store assets in a per beaker folder
 
 - Bumped version to 3.5.0 to prepare for release.
 - updated docs
 - updated ckit to use latest sc with cleaner log storage and added a flag for the screenshot download
 
-#3.4.2 (2013-07-14)
+# 3.4.2 (2013-07-14)
 fixed typo
 
 - Bumped version to 3.4.2 to prepare for release.
 - fixed dumb typo
 
-#3.4.1 (2013-07-14)
+# 3.4.1 (2013-07-14)
 minor update to sc
 
 - Bumped version to 3.4.1 to prepare for release.
 - bumped sc version for bug fix
 
-#3.4.0 (2013-07-14)
+# 3.4.0 (2013-07-14)
 upgrade to use new selenium connect and integrated sauce lab job failures screenshots and ci reporting
 
 - small patch to the rake file
@@ -142,7 +142,7 @@ upgrade to use new selenium connect and integrated sauce lab job failures screen
 - turned off travis email notifications
 - added dynamic naming for sauce runs, and a dump of the video url on failure
 
-#3.3.1 (2013-07-11)
+# 3.3.1 (2013-07-11)
 Fixed bugs related to tagging and alternate configuration files in concurrent runs
 
 - Bumped version to 3.3.1 to prepare for release.
@@ -150,7 +150,7 @@ Fixed bugs related to tagging and alternate configuration files in concurrent ru
 - fixed issue where --all was not getting passed forward in parallel tests and the same with an alternative config file, added tests for those as well
 - fixed duplicate alias for brew option
 
-#3.3.0 (2013-07-09)
+# 3.3.0 (2013-07-09)
 Fixed bugs with tagging and concurrency
 
 - Bumped version to 3.3.0 to prepare for release.
@@ -162,13 +162,13 @@ Fixed bugs with tagging and concurrency
 - removed debug info
 - initial cut on tagging updates
 
-#3.2.0 (2013-07-08)
+# 3.2.0 (2013-07-08)
 Updated Selenium Connect
 
 - Bumped version to 3.2.0 to prepare for release.
 - updated selenium connect to latest version
 
-#3.1.0 (2013-07-07)
+# 3.1.0 (2013-07-07)
 Updated logging mechanism for concurrent tests and to output junit xml.
 
 - Bumped version to 3.1.0 to prepare for release.
@@ -183,14 +183,14 @@ Updated logging mechanism for concurrent tests and to output junit xml.
 - added in configurable junit export with stdout
 - added logging feature and tests, and expanded the configuration for logging
 
-#3.0.1 (2013-07-05)
+# 3.0.1 (2013-07-05)
 Made the base url available in the env for formula usage
 
 - Bumped version to 3.0.1 to prepare for release.
 - removed unused shared context file, and updated config parameter passing
 - Added an environment variable setter for base_url based on the config object in a before(:each) block
 
-#3.0.0 (2013-07-04)
+# 3.0.0 (2013-07-04)
 Now with concurrent tests
 
 - Bumped version to 3.0.0 to prepare for release.
@@ -219,7 +219,7 @@ Now with concurrent tests
 - Downgraded the required ruby version to just 1.9.3
 - one small edit because of a bug with git flow #62
 
-#2.1.0 (2013-06-28)
+# 2.1.0 (2013-06-28)
 - Updated documentation for #62 release process.
 - Bumped version to 2.1.0 to prepare for release.
 - Changed the oder of branch updates in rakefile #62
@@ -230,20 +230,20 @@ Now with concurrent tests
 -  updated rvm version files and removed the ext directory
 - moved the build dir deletion to the before so that post test inspection could be carried out, also added a rough implementation to close #63
 
-#2.0.0 (2013-06-27)
+# 2.0.0 (2013-06-27)
 - Updated to Selenium-Connect version to 2.0.0
 - Improved performance with driver hooks
 - Added the ability to specify config files on brew.
 - NOTE: Updated default config file from `_config.yaml` to `config.yaml`
 - Added the "catalyst" concept for injecting data into formulas.
 
-#1.3.0 (2013-06-22)
+# 1.3.0 (2013-06-22)
 - Added explicit recursive file loading process for formulas
 - Cleaned up documentation
 - Updated tests
 - Cleaned up logging
 
-#1.2.1 (2013-06-21)
+# 1.2.1 (2013-06-21)
 - Bumping version number and adding Jason Fox as an author
 - Making it so symbol values as tags in beakers will default to true if no value is set to them
 - Pulled out the log value setter from shared_context and rolled this up into selenium-connect instead. Bumped to new version of selenium-connect to get this functionality
@@ -257,13 +257,13 @@ Now with concurrent tests
 - updated git ignore for build directory and changed the new feature to a different name to prevent conflicts
 - removed non running spec
 - added a few rake tasks and switched to standard build directory
-#1.1.1 (2013-06-09)
+# 1.1.1 (2013-06-09)
 - Bumping selenium-connect version to account for sauce gem breaking changes
 
-#1.1.0 (2013-06-09)
+# 1.1.0 (2013-06-09)
 - Added the ability to pass in environment variables with ckit brew --params=THING1:value THING2:value
 
-#1.0.0 (2013-06-05)
+# 1.0.0 (2013-06-05)
 - Removed a hard-coded exit code checker from the ckit binary, also adjusted the requires in it to use the top level chemistrykit file in lib. Had to rework that file as well. Also updated the readme
 - Looks like my previous commit didn't include the cleanup of old files. Here you go! Also, updated the readme slightly
 - Wired up selenium-connect and gladly gutted a heap of code that it replaced. Also, updated the readme and updated the gemspec.
@@ -311,7 +311,7 @@ Now with concurrent tests
 - Removed rake because we're not using it, added aruba and cucumber because living docs for the Cli is cool
 - Please load aruba when you run feature files
 
-#0.1.1 (2013-02-02)
+# 0.1.1 (2013-02-02)
 
 * `ckit new` generates a chemistrykit project
 * Execute tests in SauceLabs Ondemand

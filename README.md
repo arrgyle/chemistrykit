@@ -1,4 +1,4 @@
-#ChemistryKit 3.10.0 (2013-09-17)
+# ChemistryKit 3.10.0 (2013-09-17)
 
 [![Gem Version](https://badge.fury.io/rb/chemistrykit.png)](http://badge.fury.io/rb/chemistrykit) [![Build Status](https://travis-ci.org/arrgyle/chemistrykit.png?branch=develop)](https://travis-ci.org/jrobertfox/chef-broiler-platter) [![Code Climate](https://codeclimate.com/github/arrgyle/chemistrykit.png)](https://codeclimate.com/github/arrgyle/chemistrykit) [![Coverage Status](https://coveralls.io/repos/arrgyle/chemistrykit/badge.png?branch=develop)](https://coveralls.io/r/arrgyle/chemistrykit?branch=develop)
 
@@ -19,7 +19,7 @@ All the documentation for ChemistryKit can be found in this README, organized as
 - [Deployment](#deployment)
 - [Friends](#friends)
 
-##Getting Started
+## Getting Started
 
     $ gem install chemistrykit
     $ ckit new framework_name
@@ -35,9 +35,9 @@ This will generate a beaker file (a.k.a. test script) with the name you provide 
 
 This will run ckit and execute your beakers. By default it will run the tests locally by default. But you can change where the tests run and all other relevant bits in `config.yaml` file detailed below.
 
-##Building a Test Suite
+## Building a Test Suite
 
-###Spec Discovery
+### Spec Discovery
 
 ChemistryKit is built on top of RSpec. All specs are in the _beaker_ directory and end in _beaker.rb. Rather than being discovered via class or file name as some systems they are by identified by tag.
 
@@ -75,12 +75,12 @@ During development it is often helpful to just run a specific beaker, this can b
 
     ckit brew --beakers=beakers/wip_beaker.rb
 
-####Special Tags
+#### Special Tags
 There are some tags that can be used to control various aspects of the harness. The following are supported:
 
 - `public: SOME_VALUE` - If you are running your harness against sauce labs, then you can control how the permissions are set for a particular beaker according to the visibility options detailed at the bottom of [this page](https://saucelabs.com/docs/additional-config). For example if you wanted a test to be private you could add `public: 'private'` to your beaker tags.
 
-###Formula Loading
+### Formula Loading
 Code in the `formula` directory can be used to build out page objects and helper functions to facilitate your testing. The files are loaded in a particular way:
 
 - Files in any `lib` directory are loaded before other directories.
@@ -89,7 +89,7 @@ Code in the `formula` directory can be used to build out page objects and helper
 
 So for example if you have a `alpha_page.rb` file in your formulas directory that depends on a `helpers.rb` file, then you best put the `helpers.rb` file in the `lib` directory so it is loaded before the file that depends on it.
 
-###Chemists! The Users of your System Under Test
+### Chemists! The Users of your System Under Test
 With ChemistryKit we made it simple to encapsulate data about a particular user that is "using" your application that you are testing. We call them chemists. When you create a new test harness there will be a `chemists` folder that contains an empty `chemists.csv` file with only the words `key` and `type` at the top. In this folder you can create any number of files with arbitrary user data, **just make sure to include the `key` and`type` headings!** such as:
 
     /chemists/my_valid_users.csv
@@ -151,7 +151,7 @@ Inside your formula. COOL!
 
 The FormulaLab will handle the heavy lifting of assembling your formula with a driver and correct chemist (if the formula needs one). Also note that the specific instance of chemist is cached so that any changes your formula makes to the chemist is reflected in other formulas that use it.
 
-###Catalysts! Driving Tests with Data
+### Catalysts! Driving Tests with Data
 In addition to using **Chemists** to mix data into your test barness, you can also use **Catalysts** simple key-value stores that can be populated from a CSV file. Formulas can set and get a catalyst or use the `catalyize` method to directly inject the data into the formula by file name. Once you have a catalyst, simply access the values by their keys:
 
 ```Ruby
@@ -172,10 +172,10 @@ module Formulas
 end
 ```
 
-###Execution Order
+### Execution Order
 Chemistry Kit executes specs in a random order. This is intentional. Knowing the order a spec will be executed in allows for dependencies between them to creep in. Sometimes unintentionally. By having them go in a random order parallelization becomes a much easier.
 
-###Before and After
+### Before and After
 Chemistry Kit uses the 4-phase model for scripts with a chunk of code that gets run before and after each method. By default, it does nothing more than launch a browser instance that your configuration says you want. If you want to do something more than that, just add it to your spec.
 
 ```ruby
@@ -186,26 +186,26 @@ end
 
 You can even nest them inside different describe/context blocks and they will get executed from the outside-in.
 
-###Reporting and CI Integration
+### Reporting and CI Integration
 Each run of Chemistry Kit saves logging and test output to the _evidence_ directory. And in there will be the full set of JUnit XML files that may be consumed by your CI as well as a `final_results.html` report file with a full review of all the tests.
 
 Assets generated by Selenium (logs, screenshots, etc.) are stored in a subfolder with a name matching the describe block in your beaker, slugifyed like: `my_beaker_name`. This is to provide some organization but also allow the integration with jenkins using [this plugin](https://wiki.jenkins-ci.org/display/JENKINS/JUnit+Attachments+Plugin).
 
-##Configuration
+## Configuration
 ChemistryKit is configured by default with a `config.yaml` file that is created for you when you scaffold out a test harness. Relevant configuration options are detailed below:
 
-###Basic Options
+### Basic Options
 - `base_url:` The base url of your app, stored to the ENV for access in your beakers and formulas.
 - `retries_on_failure:` Defaults to 1, set the number of times a test should be retried on failure
 - `concurrency:` You may override the default concurrency of 1 to run the tests in parallel
 
 - `screenshot_on_fail` By default false, set to true to download a screenshot of the failure (supported by sauce labs for now.)
 
-###Selenium Connect Options
+### Selenium Connect Options
 
 `selenium_connect:` Options under this node override the defaults for the [Selenium Connect](https://github.com/arrgyle/selenium-connect) gem. See that documentation for specifics.
 
-###Basic Auth Options
+### Basic Auth Options
 `basic_auth:` Options under this node allow you to configure your test harness to authenticate prior to executing a test. This is helpful for testing against restricted development environments. The options include:
 
 - `username:` The username to access your site with basic HTTP authentication.
@@ -213,23 +213,23 @@ ChemistryKit is configured by default with a `config.yaml` file that is created 
 - `http_path:` An HTTP end-point loaded before each test run to cache the credentials for the test run.
 - `https_path:` An HTTPS end-point loaded before each test run to cache the credentials for the test run.
 
-###Split Testing Options
+### Split Testing Options
 `split_testing:` Currently ChemistryKit supports opting out of [Optimizely](https://www.optimizely.com/) A/B testing. The available options are:
 
 - `provider:` Currently only `optimizely` is supported.
 - `opt_out:` A value of `true` will opt you out of the A/B testing
 
 
-##Command Line Usage
+## Command Line Usage
 
-###new
+### new
 Creates a new ChemistryKit project.
 
 Usage:
 
     ckit new [NAME]
 
-###brew
+### brew
 Executes your test cases.
 
 Usage:
@@ -247,7 +247,7 @@ Available options for the `brew` command:
 -x, --retry [INT]           How many times should a failing test be retried.
 ```
 
-###generate forumla
+### generate forumla
 Creates a new boilerplate formula object.
 
 Usage:
@@ -255,21 +255,21 @@ Usage:
     ckit generate formula [NAME]
 
 
-###generate beaker
+### generate beaker
 Creates a new boilerplate beaker object.
 
 Usage:
 
     ckit generate beaker [NAME]
 
-###tags
+### tags
 Lists all the tags you have used in your beakers.
 
 Usage:
 
     ckit tags
 
-##Contribution Guidelines
+## Contribution Guidelines
 
 This project conforms to the [neverstopbuilding/craftsmanship](https://github.com/neverstopbuilding/craftsmanship) guidelines. Please see them for details on:
 - Branching theory
@@ -278,10 +278,10 @@ This project conforms to the [neverstopbuilding/craftsmanship](https://github.co
 
 Most importantly, submit your pull requests to the `develop` branch.
 
-###Check out the user group!
+### Check out the user group!
 [https://groups.google.com/forum/#!forum/chemistrykit-users](https://groups.google.com/forum/#!forum/chemistrykit-users)
 
-###It's simple
+### It's simple
 
 1. Create a feature branch from develop: `git checkout -b feature/myfeature develop` or `git flow feature start myfeature`
 2. Do something awesome.
@@ -301,7 +301,7 @@ All issues and questions related to this project should be logged using the [git
 
     ckit
 
-##Deployment
+## Deployment
 The release process is rather automated, just use one rake task with the new version number:
 
     rake release_start['2.1.0']
